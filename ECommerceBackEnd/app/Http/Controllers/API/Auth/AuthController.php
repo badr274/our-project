@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\API\Auth\RegisterRequest;
 use App\Http\Requests\API\Auth\LoginRequest;
-
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -25,7 +25,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $validator = $request->validated();
-        if (! $token = auth('api')->attempt($validator)) {
+        if (! $token = auth()->attempt($validator)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -41,22 +41,58 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function register(RegisterRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
+//     public function register(Request $request): JsonResponse
+//     {
+//         $validator = Validator::make($request->all(), [
+//             'name' => 'required|string|between:2,100',
+//             'email' => 'required|string|email|max:100|unique:users',
+//             'password' => 'required|string|min:6',
+//         ]);
+//         if ($validator->fails()) {
+//             return response()->json($validator->errors()->toJson(), 400);
+//         }
 
-        $token = JWTAuth::fromUser($user);
+//         $user = User::create([
+//             'name' => $request->get('name'),
+//             'email' => $request->get('email'),
+//             'password' => Hash::make($request->get('password')),
+//         ]);
+//         // $data = $request->validated();
+//         // $data['password'] = Hash::make($data['password']);
+//         // $user = User::create($data);
+
+//         // $token = JWTAuth::fromUser($user);
+
+//         return response()->json([
+//             'message' => 'user created successfully',
+//             'user' => $user,
+//             // 'token' => $token,
+//         ], 200);
+//     }
+
+public function register(Request $request)
+    {
+        // $validator = Validator::make($request->all(), [
+        //     'name' => 'required|string|between:2,100',
+        //     'email' => 'required|string|email|max:100|unique:users',
+        //     'password' => 'required|string|min:6',
+        // ]);
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors()->toJson(), 400);
+        // }
+
+        $user = User::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
+        ]);
+
+        // $token = JWTAuth::fromUser($user);
 
         return response()->json([
-            'message' => 'user created successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 200);
-    }
-
-
+            'message' => 'User successfully registered',
+        ], 200);
+}
     /**
      * Get the authenticated User.
      *
@@ -65,7 +101,7 @@ class AuthController extends Controller
 
     public function getAccount(): JsonResponse
     {
-        return response()->json(auth('api')->user());
+        return response()->json(auth()->user());
     }
 
     /**
@@ -76,7 +112,7 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        auth('api')->logout();
+        auth()->logout();
         return response()->json(['message' => 'user logged out successfully']);
     }
 

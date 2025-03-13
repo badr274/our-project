@@ -19,12 +19,15 @@ const SignupPage = () => {
     email: "",
     password: "",
   };
+
   // States
   const navigate = useNavigate();
   const [signUpData, setSignupData] = useState<ISignup>(defaultSignupData);
   const [signUp, { isLoading }] = useSignupMutation();
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    console.log(signUpData);
+
     try {
       const res = await signUp(signUpData).unwrap();
       const date = new Date();

@@ -103,8 +103,8 @@ const Navbar1 = ({
     try {
       const res = await logout({}).unwrap(); // استدعاء الدالة وفك البيانات
       console.log(res);
-      // CookieService.remove("token");
-      // window.location.reload();
+      CookieService.remove("token");
+      window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
     }

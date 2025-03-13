@@ -15,6 +15,10 @@ export const AuthApiSlice = createApi({
         url: "/register",
         method: "POST",
         body: credentials,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       }),
     }),
     Login: build.mutation<ILoginResponse, ILogin>({
@@ -22,12 +26,20 @@ export const AuthApiSlice = createApi({
         url: "/login",
         method: "POST",
         body: credentials,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       }),
     }),
     Logout: build.mutation({
       query: () => ({
         url: "/logout",
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       }),
     }),
   }),
