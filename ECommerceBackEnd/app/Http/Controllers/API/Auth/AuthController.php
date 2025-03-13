@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\API\Auth\RegisterRequest;
 use App\Http\Requests\API\Auth\LoginRequest;
 
+
 class AuthController extends Controller
 {
 
