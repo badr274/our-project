@@ -23,5 +23,5 @@ use App\Http\Controllers\API\Auth\AuthController;
 Route::middleware(['api'])->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login')->middleware('throttle:60,1');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
