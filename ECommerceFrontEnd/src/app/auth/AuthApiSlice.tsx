@@ -8,18 +8,18 @@ interface IRegisterResponse {
 }
 export const AuthApiSlice = createApi({
   reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000" }),
   endpoints: (build) => ({
     Signup: build.mutation<IRegisterResponse, ISignup>({
       query: (credentials) => ({
-        url: "",
+        url: "/register",
         method: "POST",
         body: credentials,
       }),
     }),
     Login: build.mutation<ILoginResponse, ILogin>({
       query: (credentials) => ({
-        url: "/",
+        url: "/login",
         method: "POST",
         body: credentials,
       }),

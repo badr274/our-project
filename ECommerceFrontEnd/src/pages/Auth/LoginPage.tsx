@@ -32,7 +32,9 @@ const LoginPage = () => {
   const onSubmit: SubmitHandler<ILogin> = async () => {
     try {
       const response = await login(loginData).unwrap();
+      console.log(response);
       const date = new Date();
+
       const IN_DAYS = 3;
       const EXPIRES_AT = 1000 * 60 * 60 * 24 * IN_DAYS;
 
