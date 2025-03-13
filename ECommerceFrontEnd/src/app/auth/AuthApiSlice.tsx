@@ -7,8 +7,8 @@ interface IRegisterResponse {
   token: string;
 }
 export const AuthApiSlice = createApi({
-  reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000" }),
+  reducerPath: "authApi",
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BASE_URL }),
   endpoints: (build) => ({
     Signup: build.mutation<IRegisterResponse, ISignup>({
       query: (credentials) => ({
@@ -24,7 +24,14 @@ export const AuthApiSlice = createApi({
         body: credentials,
       }),
     }),
+    Logout: build.mutation({
+      query: () => ({
+        url: "/logout",
+        method: "POST",
+      }),
+    }),
   }),
 });
 // eslint-disable-next-line react-refresh/only-export-components
-export const { useLoginMutation, useSignupMutation } = AuthApiSlice;
+export const { useLoginMutation, useSignupMutation, useLogoutMutation } =
+  AuthApiSlice;

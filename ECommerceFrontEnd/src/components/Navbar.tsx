@@ -29,6 +29,7 @@ import ShoppingCart from "./ShoppingCart";
 import { useAppSelector } from "@/app/hooks";
 import { useState } from "react";
 import { useModeTheme } from "@/context/ThemeContext";
+import { useLogoutMutation } from "@/app/auth/AuthApiSlice";
 
 interface MenuItem {
   title: string;
@@ -97,9 +98,16 @@ const Navbar1 = ({
   };
   const [isMyDrawerOpen, setIsMyDrawerOpen] = useState<boolean>(false);
   const { cartItems } = useAppSelector((state) => state.shoppingCart);
-  const handleLogout = () => {
-    CookieService.remove("token");
-    window.location.reload();
+  const [logout] = useLogoutMutation();
+  const handleLogout = async () => {
+    try {
+      const res = await logout({}).unwrap(); // استدعاء الدالة وفك البيانات
+      console.log(res);
+      // CookieService.remove("token");
+      // window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
   return (
     <section className="py-4 px-2 shadow-sm">
