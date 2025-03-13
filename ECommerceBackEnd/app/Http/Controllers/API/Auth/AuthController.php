@@ -10,8 +10,6 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\API\Auth\RegisterRequest;
 use App\Http\Requests\API\Auth\LoginRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-
 
 class AuthController extends Controller
 {
@@ -43,30 +41,47 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    // public function register(RegisterRequest $request): JsonResponse
-    // {
-    //     $data = $request->validated();
-    //     $data['password'] = Hash::make($data['password']);
-    //     $user = User::create($data);
+    //     public function register(Request $request): JsonResponse
+    //     {
+    //         $validator = Validator::make($request->all(), [
+    //             'name' => 'required|string|between:2,100',
+    //             'email' => 'required|string|email|max:100|unique:users',
+    //             'password' => 'required|string|min:6',
+    //         ]);
+    //         if ($validator->fails()) {
+    //             return response()->json($validator->errors()->toJson(), 400);
+    //         }
 
-    //     $token = JWTAuth::fromUser($user);
+    //         $user = User::create([
+    //             'name' => $request->get('name'),
+    //             'email' => $request->get('email'),
+    //             'password' => Hash::make($request->get('password')),
+    //         ]);
+    //         // $data = $request->validated();
+    //         // $data['password'] = Hash::make($data['password']);
+    //         // $user = User::create($data);
 
-    //     return response()->json([
-    //         'message' => 'user created successfully',
-    //         'user' => $user,
-    //         'token' => $token,
-    //     ], 200);
-    // }
+    //         // $token = JWTAuth::fromUser($user);
+
+    //         return response()->json([
+    //             'message' => 'user created successfully',
+    //             'user' => $user,
+    //             // 'token' => $token,
+    //         ], 200);
+    //     }
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'name' => 'required|string|between:2,100',
+        //     'email' => 'required|string|email|max:100|unique:users',
+        //     'password' => 'required|string|min:6',
+        // ]);
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors()->toJson(), 400);
+        // }
 
-        User::create([
+        $user = User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
@@ -76,10 +91,9 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User successfully registered',
-        ], 200);
+              
+        ],  200);
     }
-
-
     /**
      * Get the authenticated User.
      *
@@ -88,7 +102,7 @@ class AuthController extends Controller
 
     public function getAccount(): JsonResponse
     {
-        return response()->json(auth('api')->user());
+        return response()->json(auth()->user());
     }
 
     /**
@@ -97,19 +111,10 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    // public function logout(): JsonResponse
-    // {
-    //     auth('api')->logout();
-    //     return response()->json([
-    //         'message' => 'Successfully logged out'
-    //     ], 200);
-    // }
-
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'user logged out successfully']);
     }
 
 

@@ -15,7 +15,7 @@ export const LOGIN_FORM_INPUTS: IInput[] = [
 export const SIGNUP_FORM_INPUTS: IInput[] = [
   {
     type: "text",
-    name: "username",
+    name: "name",
     placeholder: "Enter your name",
   },
   {
