@@ -32,13 +32,11 @@
 //     'supports_credentials' => false,
 
 // ];
+
 return [
-    'paths' => ['api/*', 'login', 'register', 'logout'], // تحديد المسارات المسموح بها
-    'allowed_methods' => ['*'], // السماح بكل أنواع الطلبات (GET, POST, PUT, DELETE)
-    'allowed_origins' => ['http://localhost:5173'], // السماح فقط للفرونت إند
-    'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'], // السماح بكل الهيدرز
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => true, // إذا كنت تستخدم الكوكيز أو التوثيق
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => ['http://localhost:5174'],
+    'allowed_headers' => ['*'],
+    'supports_credentials' => true,
 ];
