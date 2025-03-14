@@ -101,8 +101,7 @@ const Navbar1 = ({
   const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     try {
-      const res = await logout({}).unwrap(); // استدعاء الدالة وفك البيانات
-      console.log(res);
+      await logout(token).unwrap();
       CookieService.remove("token");
       window.location.reload();
     } catch (error) {
