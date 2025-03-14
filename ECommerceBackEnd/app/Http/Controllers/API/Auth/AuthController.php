@@ -2,55 +2,57 @@
 
 namespace App\Http\Controllers\API\Auth;
 
+use App\Http\Requests\API\Auth\LoginRequest;
+use App\Http\Requests\API\Auth\RegisterRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\Auth\UserFactory;
+use App\Services\Auth\TokenService;
+use App\Services\Auth\LoginContext;
 
 class AuthController
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $data = UserFactory::createUser($request->only('name', 'email', 'password'));
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return response()->json(['message' => 'User registered successfully'], 201);
+            return response()->json([
+                'message' => 'User registered successfully',
+                'token' => $data['token'],
+                'user' => $data['user']
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            $loginContext = new LoginContext();
+            $data = $loginContext->login($request->only('email', 'password'));
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            if (!$data) {
+                return response()->json(['message' => 'Email or password is incorrect'], 401);
+            }
+
+            return response()->json(['token' => $data['token'], 'user' => $data['user']]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json(['token' => $token, 'user' => $user]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Logged out successfully']);
-    }
+        try {
+            if (!$request->user()) {
+                return response()->json(['message' => 'Unauthenticated'], 401);
+            }
 
-    public function user(Request $request)
-    {
-        return response()->json($request->user());
+            TokenService::revokeToken($request->user());
+            return response()->json(['message' => 'Logged out successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }

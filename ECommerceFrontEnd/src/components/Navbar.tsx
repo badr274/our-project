@@ -101,10 +101,9 @@ const Navbar1 = ({
   const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     try {
-      const res = await logout({}).unwrap();
-      console.log(res);
-      // CookieService.remove("token");
-      // window.location.reload();
+      await logout(token).unwrap();
+      CookieService.remove("token");
+      window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
     }

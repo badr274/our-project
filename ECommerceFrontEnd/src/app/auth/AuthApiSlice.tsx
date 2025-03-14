@@ -25,9 +25,12 @@ export const AuthApiSlice = createApi({
       }),
     }),
     Logout: build.mutation({
-      query: () => ({
+      query: (token) => ({
         url: "/logout",
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
       }),
     }),
   }),
