@@ -4,72 +4,44 @@ import { Input } from "@/components/ui/input";
 import logoImage from "@/assets/kisspng-online-shopping-shopping-cart-logo-e-commerce-market-5ab886d637a728.195706121522042582228.png";
 import { Link, useNavigate } from "react-router-dom";
 import { SIGNUP_FORM_INPUTS } from "@/data";
-import { ChangeEvent, FormEvent, useState } from "react";
+// import { ChangeEvent, FormEvent, useState } from "react";
 import CookieService from "@/services/CookieService";
 import { ISignup } from "@/interfaces";
 import { useSignupMutation } from "@/app/auth/AuthApiSlice";
 import { Loader2 } from "lucide-react";
-// import { SubmitHandler, useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { signupSchema } from "@/validation";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { signupSchema } from "@/validation";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
-  const defaultSignupData = {
-    name: "",
-    email: "",
-    password: "",
-  };
-
   // States
   const navigate = useNavigate();
-  const [signUpData, setSignupData] = useState<ISignup>(defaultSignupData);
   const [signUp, { isLoading }] = useSignupMutation();
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ISignup>({ resolver: yupResolver(signupSchema) });
+  const onSubmit: SubmitHandler<ISignup> = async (signupData) => {
     try {
-      const res = await signUp(signUpData).unwrap();
+      const res = await signUp(signupData).unwrap();
       const date = new Date();
       const IN_DAYS = 3;
       const EXPIRES_AT = 1000 * 60 * 60 * 24 * IN_DAYS;
       date.setTime(date.getTime() + EXPIRES_AT);
       const options = { path: "/", expires: date };
       CookieService.set("token", res.token, options);
-      navigate(-1);
+      toast.success("Signing up successfully!");
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
       console.log(res);
     } catch (error) {
       console.log(error);
     }
   };
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm<ISignup>({
-  //   resolver: zodResolver(signupSchema),
-  // });
-  // const onSubmit: SubmitHandler<ISignup> = async () => {
-  // console.log("object");
-  // try {
-  //   const response = await signUp(signUpData).unwrap();
-  //   console.log(response);
-  //   const date = new Date();
-  //   const IN_DAYS = 3;
-  //   const EXPIRES_AT = 1000 * 60 * 60 * 24 * IN_DAYS;
 
-  //   date.setTime(date.getTime() + EXPIRES_AT);
-  //   const options = { path: "/", expires: date };
-  //   CookieService.set("token", response.token, options);
-  //   navigate(-1);
-  // } catch (err) {
-  //   console.error("Signup Failed:", err);
-  // }
-  // };
-
-  // Handlers
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSignupData((prev) => ({ ...prev, [name]: value }));
-  };
   // Renders
   const renderSignupForm = SIGNUP_FORM_INPUTS.map(
     ({ name, type, placeholder }, idx) => {
@@ -78,13 +50,12 @@ const SignupPage = () => {
           <Input
             type={type}
             placeholder={placeholder}
-            // {...register(name)}
+            {...register(name)}
             name={name}
-            onChange={handleInputChange}
           />
-          {/* {errors[name] && (
+          {errors[name] && (
             <p className="text-red-500 text-sm">{errors[name]?.message}</p>
-          )} */}
+          )}
         </div>
       );
     }
@@ -106,7 +77,7 @@ const SignupPage = () => {
               <p className="text-muted-foreground">Sign Up for free</p>
             </div>
             <div>
-              <form onSubmit={handleSubmit} className="grid gap-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
                 {renderSignupForm}
                 <Button
                   type="submit"

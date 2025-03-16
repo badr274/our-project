@@ -1,6 +1,11 @@
-import { IAddressInput, ICreditCardInput, IInput } from "@/interfaces";
+import {
+  IAddressInput,
+  ICreditCardInput,
+  ILoginInput,
+  ISignupInput,
+} from "@/interfaces";
 
-export const LOGIN_FORM_INPUTS: IInput[] = [
+export const LOGIN_FORM_INPUTS: ILoginInput[] = [
   {
     type: "email",
     name: "email",
@@ -12,7 +17,7 @@ export const LOGIN_FORM_INPUTS: IInput[] = [
     placeholder: "Enter your password",
   },
 ];
-export const SIGNUP_FORM_INPUTS: IInput[] = [
+export const SIGNUP_FORM_INPUTS: ISignupInput[] = [
   {
     type: "text",
     name: "name",

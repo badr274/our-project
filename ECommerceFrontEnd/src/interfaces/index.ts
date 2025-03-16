@@ -18,7 +18,12 @@ export interface IProduct {
   quantity: number;
 }
 
-export interface IInput {
+export interface ILoginInput {
+  type: string;
+  name: "password" | "email";
+  placeholder?: string;
+}
+export interface ISignupInput {
   type: string;
   name: "name" | "password" | "email";
   placeholder?: string;

@@ -2,6 +2,10 @@ import { ILogin, ISignup } from "@/interfaces";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 interface ILoginResponse {
   token: string;
+  user: {
+    name: string;
+    email: string;
+  };
 }
 interface IRegisterResponse {
   token: string;
@@ -30,7 +34,7 @@ export const AuthApiSlice = createApi({
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-        }
+        },
       }),
     }),
   }),
