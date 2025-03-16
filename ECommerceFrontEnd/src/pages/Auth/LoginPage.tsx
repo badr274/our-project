@@ -2,55 +2,58 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import logoImage from "@/assets/kisspng-online-shopping-shopping-cart-logo-e-commerce-market-5ab886d637a728.195706121522042582228.png";
-import { ChangeEvent, useState } from "react";
+// import { ChangeEvent, FormEvent, useState } from "react";
 import { LOGIN_FORM_INPUTS } from "@/data";
 import { useLoginMutation } from "@/app/auth/AuthApiSlice";
 import { ILogin } from "@/interfaces";
 import { Loader2 } from "lucide-react";
 import CookieService from "@/services/CookieService";
 import { Link, useNavigate } from "react-router-dom";
-import { loginSchema } from "@/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-
+import { loginSchema } from "@/validation";
+import { yupResolver } from "@hookform/resolvers/yup";
+import toast from "react-hot-toast";
 const LoginPage = () => {
-  const defaultLoginData = {
-    email: "",
-    password: "",
-  };
+  // const defaultLoginData = {
+  //   email: "",
+  //   password: "",
+  // };
   // States
   const navigate = useNavigate();
-  const [loginData, setLoginData] = useState<ILogin>(defaultLoginData);
+  // const [loginData, setLoginData] = useState<ILogin>(defaultLoginData);
   const [login, { isLoading }] = useLoginMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ILogin>({
-    resolver: zodResolver(loginSchema),
-  });
-  const onSubmit: SubmitHandler<ILogin> = async () => {
+  } = useForm<ILogin>({ resolver: yupResolver(loginSchema) });
+  const onSubmit: SubmitHandler<ILogin> = async (loginData) => {
     try {
-      const response = await login(loginData).unwrap();
-      console.log(response);
+      const res = await login(loginData).unwrap();
+      console.log(res);
       const date = new Date();
-
       const IN_DAYS = 3;
       const EXPIRES_AT = 1000 * 60 * 60 * 24 * IN_DAYS;
-
       date.setTime(date.getTime() + EXPIRES_AT);
       const options = { path: "/", expires: date };
-      CookieService.set("token", response.token, options);
-      navigate(-1);
-    } catch (err) {
-      console.error("Login Failed:", err);
+      CookieService.set("token", res.token, options);
+      toast.success("Logined successfully!");
+      setTimeout(() => {
+        navigate(-1);
+      }, 1500);
+    } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error &&
+        (error.status === 401 || error.status === 422)
+      ) {
+        toast.error("Email or password is incorrect");
+      }
     }
   };
+
   // Handlers
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
-  };
   // Renders
   const renderLoginForm = LOGIN_FORM_INPUTS.map(
     ({ name, type, placeholder }, idx) => {
@@ -59,14 +62,11 @@ const LoginPage = () => {
           <Input
             type={type}
             placeholder={placeholder}
-            {...register(name as keyof ILogin)}
+            {...register(name)}
             name={name}
-            onChange={handleInputChange}
           />
-          {errors[name as keyof ILogin] && (
-            <p className="text-red-500 text-sm">
-              {errors[name as keyof ILogin]?.message}
-            </p>
+          {errors[name] && (
+            <p className="text-red-500 text-sm">{errors[name]?.message}</p>
           )}
         </div>
       );
