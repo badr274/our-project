@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\AuthController;
-
+use App\Http\Controllers\API\Home\HomeController;
+use App\Http\Controllers\API\Product\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,9 +21,11 @@ use App\Http\Controllers\API\Auth\AuthController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{product}', [ProductController::class, 'show']);
 
+Route::get('/latest-products', HomeController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
 });

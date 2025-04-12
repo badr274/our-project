@@ -3,15 +3,18 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Strategies\Login\LoginStrategyInterface;
+use App\Strategies\Login\DefaultLoginStrategy;
+
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-    public function register(): void
+    public function register()
     {
-        //
+        $this->app->bind(LoginStrategyInterface::class, DefaultLoginStrategy::class);
     }
 
     /**
