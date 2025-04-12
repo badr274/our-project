@@ -13,9 +13,9 @@ class ProductService
         $this->productRepo = $productRepo;
     }
 
-    public function getAll()
+    public function getAll($limit = null)
     {
-        return $this->productRepo->getLatest();
+        return $this->productRepo->getLatest($limit);
     }
 
     public function getWithSimilar($id)

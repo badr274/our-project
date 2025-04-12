@@ -6,10 +6,17 @@ use App\Models\Product;
 
 class ProductRepository
 {
-    public function getLatest()
+    public function getLatest($limit = null)
     {
-        return Product::latest()->get();
+        $query = Product::latest();
+
+        if ($limit) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
     }
+
 
     public function find($id)
     {
