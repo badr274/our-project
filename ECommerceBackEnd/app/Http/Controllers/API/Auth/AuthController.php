@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers\API\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Auth\LoginRequest;
 use App\Http\Requests\API\Auth\RegisterRequest;
 use Illuminate\Http\Request;
-use App\Services\Auth\UserFactory;
-use App\Services\Auth\TokenService;
-use App\Services\Auth\LoginContext;
+use App\Services\Auth\AuthService;
 
-class AuthController
+class AuthController extends Controller
 {
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function register(RegisterRequest $request)
     {
         try {
-            $data = UserFactory::createUser($request->only('name', 'email', 'password'));
-
+            $data = $this->authService->register($request->validated());
             return response()->json([
                 'message' => 'User registered successfully',
                 'token' => $data['token'],
@@ -29,14 +34,8 @@ class AuthController
     public function login(LoginRequest $request)
     {
         try {
-            $loginContext = new LoginContext();
-            $data = $loginContext->login($request->only('email', 'password'));
-
-            if (!$data) {
-                return response()->json(['message' => 'Email or password is incorrect'], 401);
-            }
-
-            return response()->json(['token' => $data['token'], 'user' => $data['user']]);
+            $data = $this->authService->login($request->validated());
+            return response()->json($data);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -48,8 +47,7 @@ class AuthController
             if (!$request->user()) {
                 return response()->json(['message' => 'Unauthenticated'], 401);
             }
-
-            TokenService::revokeToken($request->user());
+            $request->user()->currentAccessToken()->delete();
             return response()->json(['message' => 'Logged out successfully'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);

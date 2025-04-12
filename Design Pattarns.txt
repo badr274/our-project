@@ -1,3 +1,7 @@
-Factory Pattern
+🏭 Factory Pattern
 
-Strategy Pattern
+🔁 Strategy Pattern
+
+📦 Service Layer
+
+📚 Repository Pattern
