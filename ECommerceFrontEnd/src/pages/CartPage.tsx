@@ -15,7 +15,7 @@ import {
 import { calcTotalPrice } from "@/utils";
 import { CircleX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import productImage from "@/assets/ace.jpg";
 const CartPage = () => {
   const { cartItems } = useAppSelector((state) => state.shoppingCart);
   const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ const CartPage = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <img
-                          src={item.thumbnail}
+                          src={productImage}
                           alt="product image"
                           className="max-w-[80px] lg:max-w-[120px]"
                         />

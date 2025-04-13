@@ -10,37 +10,38 @@ import {
 import { IProduct } from "@/interfaces";
 import { useAppDispatch } from "@/app/hooks";
 import { addToCart } from "@/app/features/ShoppingCartSlice";
-import { toast } from "sonner";
-
+import productImage from "@/assets/ace.jpg";
+import { truncateText } from "@/lib/utils";
 interface IProductCard {
   product: IProduct;
   productsPage?: boolean;
 }
 const ProductCard = ({ product, productsPage }: IProductCard) => {
   const dispatch = useAppDispatch();
-  const { id, title, description, thumbnail, category } = product;
+  const { id, title, description } = product;
   const handleAddToCart = () => {
     dispatch(addToCart(product));
-    toast.success("Product added successfully!");
   };
   return (
-    <Card>
-      <Link
-        to={`${
-          productsPage
-            ? `${id}?category=${category}`
-            : `/products/${id}?category=${category}`
-        }`}
-      >
-        <img src={thumbnail} alt="Product image" className="w-fit max-w-full" />
+    <Card className="py-0 overflow-hidden">
+      <Link to={`${productsPage ? `${id}` : `/products/${id}`}`}>
+        <img
+          src={`${productImage}`}
+          alt="Product image"
+          className="w-fit max-w-full"
+        />
       </Link>
+      {/* <div className="flex flex-col justify-between flex-1"> */}
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle>{truncateText(title)}</CardTitle>
+        <CardDescription className="text-slate-500">
+          {truncateText(description)}
+        </CardDescription>
       </CardHeader>
-      <CardFooter>
+      <CardFooter className="pb-6 mt-auto">
         <Button onClick={handleAddToCart}>Add to cart</Button>
       </CardFooter>
+      {/* </div> */}
     </Card>
   );
 };

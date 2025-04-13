@@ -1,26 +1,21 @@
-import { IProduct } from "@/interfaces";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const productsApiSlice = createApi({
   reducerPath: "productsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://dummyjson.com" }),
+  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BASE_URL }),
   endpoints: (build) => ({
     getProducts: build.query({
       query: () => "/products",
     }),
-    getLimitProducts: build.query({
-      query: () => "/products?limit=10",
+    getLatestProducts: build.query({
+      query: () => "/latest-products",
     }),
-    getSingleProduct: build.query<IProduct, number | string | undefined>({
+    getSingleProduct: build.query({
       query: (id) => `/products/${id}`,
-    }),
-    getProductsByCategory: build.query({
-      query: (category: string | null) => `/products/category/${category}`,
     }),
   }),
 });
 export const {
   useGetProductsQuery,
-  useGetLimitProductsQuery,
+  useGetLatestProductsQuery,
   useGetSingleProductQuery,
-  useGetProductsByCategoryQuery,
 } = productsApiSlice;

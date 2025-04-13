@@ -1,9 +1,6 @@
 import { addToCart } from "@/app/features/ShoppingCartSlice";
 import { useAppDispatch } from "@/app/hooks";
-import {
-  useGetProductsByCategoryQuery,
-  useGetSingleProductQuery,
-} from "@/app/services/ProductsSlice";
+import { useGetSingleProductQuery } from "@/app/services/ProductsSlice";
 import MyCardSkeleton from "@/components/MyCardSkeleton";
 import MyProductDetailsSkeleton from "@/components/MyProductDetailsSkeleton";
 import ProductCard from "@/components/ProductCard";
@@ -12,30 +9,27 @@ import { Button } from "@/components/ui/button";
 import { IProduct } from "@/interfaces";
 import { calcPriceDiscount } from "@/utils";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
-
+import { useNavigate, useParams } from "react-router-dom";
+import productImage from "@/assets/ace.jpg";
 const ProductDetails = () => {
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const category = searchParams.get("category");
-  const { data: similarProducts } = useGetProductsByCategoryQuery(category);
   const navigate = useNavigate();
-  const { isLoading, data: product } = useGetSingleProductQuery(id);
+  const { isLoading, data, error } = useGetSingleProductQuery(id);
   const dispatch = useAppDispatch();
   if (isLoading) return <MyProductDetailsSkeleton />;
-  const { thumbnail, title, description, price, discountPercentage, reviews } =
-    product as IProduct;
+  if (error) return <h1>Errror</h1>;
+  const { title, description, price, discountPercentage } =
+    data.product as IProduct;
 
-  const calcRating = () => {
-    if (reviews) {
-      let rating = 0;
-      for (let i = 0; i < reviews.length; i++) {
-        rating += reviews[i].rating;
-      }
-      return rating;
-    }
-  };
+  // const calcRating = () => {
+  //   if (reviews) {
+  //     let rating = 0;
+  //     for (let i = 0; i < reviews.length; i++) {
+  //       rating += reviews[i].rating;
+  //     }
+  //     return rating;
+  //   }
+  // };
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
@@ -46,12 +40,11 @@ const ProductDetails = () => {
     );
   }
   const handleAddToCart = () => {
-    if (!product) return;
-    dispatch(addToCart(product));
-    toast.success("Product added successfully!");
+    if (!data) return;
+    dispatch(addToCart(data.product));
   };
   // Renders
-  const renderSimilarProducts = similarProducts?.products.map(
+  const renderSimilarProducts = data.SimilarProducts.map(
     (product: IProduct) => {
       return <ProductCard key={product.id} product={product} />;
     }
@@ -70,7 +63,7 @@ const ProductDetails = () => {
           <div className="product-images flex-1 flex flex-col gap-5">
             <div className="image-container bg-gray-200 rounded-lg flex justify-center items-center">
               <img
-                src={thumbnail}
+                src={productImage}
                 alt="Product Image"
                 className=" w-fit max-w-full"
               />
@@ -100,10 +93,8 @@ const ProductDetails = () => {
                 )}
               </div>
               <div className="reviews space-y-2">
-                <StarRating rating={calcRating()} />
-                <div className="font-semibold text-gray-500">
-                  {reviews?.length}reviews
-                </div>
+                <StarRating rating={4} />
+                <div className="font-semibold text-gray-500">20 reviews</div>
               </div>
             </div>
             <div className="description">
