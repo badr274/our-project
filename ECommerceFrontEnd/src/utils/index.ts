@@ -1,5 +1,5 @@
 import { IProduct } from "@/interfaces";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 export const calcPriceDiscount = (
   price: number,
@@ -21,6 +21,7 @@ export const addToShoppingCart = (
       item.id === cartItem.id ? { ...item, quantity: item.quantity + 1 } : item
     );
   }
+  toast.success("Product added successfully!");
   return [...shoppingCartItems, { ...cartItem, quantity: 1 }];
 };
 

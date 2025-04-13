@@ -12,7 +12,12 @@ interface IRegisterResponse {
 }
 export const AuthApiSlice = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_BASE_URL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }),
   endpoints: (build) => ({
     Signup: build.mutation<IRegisterResponse, ISignup>({
       query: (credentials) => ({
@@ -35,6 +40,7 @@ export const AuthApiSlice = createApi({
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        body: {},
       }),
     }),
   }),

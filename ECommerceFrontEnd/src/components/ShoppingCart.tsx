@@ -14,6 +14,7 @@ import { CircleX } from "lucide-react";
 import { removeFromCart } from "@/app/features/ShoppingCartSlice";
 import QuantitySelector from "./QuantitySelector";
 import { useNavigate } from "react-router-dom";
+import productImage from "@/assets/ace.jpg";
 interface IProps {
   children: ReactNode;
   isOpen: boolean;
@@ -33,7 +34,7 @@ const ShoppingCart = ({ isOpen, setIsOpen, children }: IProps) => {
       <div key={item.id} className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
-            src={item.thumbnail}
+            src={productImage}
             alt="product image"
             className="max-w-[100px] lg:max-w-[180px]"
           />

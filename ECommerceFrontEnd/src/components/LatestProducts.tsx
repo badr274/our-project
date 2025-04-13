@@ -1,34 +1,36 @@
 import { IProduct } from "@/interfaces";
 import ProductCard from "./ProductCard";
 import MyCardSkeleton from "./MyCardSkeleton";
-import { useGetLimitProductsQuery } from "@/app/services/ProductsSlice";
+import { useGetLatestProductsQuery } from "@/app/services/ProductsSlice";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
-const LimitProducts = () => {
-  const { isLoading, data } = useGetLimitProductsQuery({});
+const LatestProducts = () => {
+  const { isLoading, data, error } = useGetLatestProductsQuery({});
 
   const navigate = useNavigate();
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 container mx-auto sm:grid-cols-2  md:grid-cols-3 xl:grid-cols-4">
         {[...Array(10)].map((_, idx) => (
           <MyCardSkeleton key={idx} />
         ))}
       </div>
     );
   }
+  console.log(data);
+  if (error) return <h1>Error</h1>;
   // Renders
-  const renderProductList = data.products.map((product: IProduct) => {
+  const renderProductList = data.latestProducts.map((product: IProduct) => {
     return (
       <ProductCard key={product.id} product={product} productsPage={false} />
     );
   });
 
   return (
-    <div className="space-y-6 px-2">
-      <h2 className="text-2xl md:text-3xl font-bold">Our Products</h2>
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3">
+    <div className="space-y-6 px-2 my-10">
+      <h2 className="text-2xl md:text-3xl font-bold">Our Latest Products</h2>
+      <div className="grid grid-cols-1 gap-5 container mx-auto sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 ">
         {renderProductList}
       </div>
       <div className="flex justify-center items-center">
@@ -44,4 +46,4 @@ const LimitProducts = () => {
   );
 };
 
-export default LimitProducts;
+export default LatestProducts;
