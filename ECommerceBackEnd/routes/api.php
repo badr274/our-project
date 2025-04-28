@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Home\HomeController;
 use App\Http\Controllers\API\Product\ProductController;
+use App\Http\Controllers\API\Cart\CartController;
+use App\Http\Controllers\API\Wishlist\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +29,9 @@ Route::get('/latest-products', HomeController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::delete('/cart/{cart}', [CartController::class, 'destroy']);
+    Route::post('/wishlist', [WishlistController::class, 'store']);
+    Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy']);
+    Route::get('/wishlist', [WishlistController::class, 'index']);
 });
