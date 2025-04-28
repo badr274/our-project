@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Category;
-use App\Models\Product;
+use Illuminate\Support\Facades\File;
 
 class CategorySeeder extends Seeder
 {
@@ -13,11 +13,11 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::factory()
-            ->count(6)
-            ->has(
-                Product::factory()->count(10)
-            )
-            ->create();
+        $json = File::get(database_path('data/categories.json'));
+        $categories = json_decode($json, true);
+
+        foreach ($categories as $categoryData) {
+            Category::create($categoryData);
+        }
     }
 }

@@ -11,7 +11,6 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    use HasApiTokens, HasFactory, Notifiable;
 
 
     /**
@@ -23,6 +22,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'image',
+        'address',
+        'phone',
+        'role',
     ];
 
     /**
@@ -46,19 +49,13 @@ class User extends Authenticatable
     ];
 
 
-    public function orders()
+    public function  carts()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Cart::class);
     }
 
-
-    public function cart()
+    public function wishlists()
     {
-        return $this->hasOne(Cart::class);
-    }
-
-    public function wishlist()
-    {
-        return $this->hasOne(Wishlist::class);
+        return $this->hasMany(Wishlist::class);
     }
 }

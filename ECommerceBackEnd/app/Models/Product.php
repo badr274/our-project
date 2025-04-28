@@ -19,23 +19,23 @@ class Product extends Model
         'stock',
     ];
 
+    /**
+     * The category that this product belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
-    public function orders()
-    {
-        return $this->belongsToMany(Order::class)->withPivot('quantity', 'price_at_order');
-    }
-
 
     public function carts()
     {
-        return $this->belongsToMany(Cart::class)->withPivot('quantity');
+        return $this->hasMany(Cart::class);
     }
 
     public function wishlists()
     {
-        return $this->belongsToMany(Wishlist::class);
+        return $this->hasMany(Wishlist::class);
     }
 }
