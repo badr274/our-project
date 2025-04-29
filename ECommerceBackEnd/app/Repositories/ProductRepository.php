@@ -30,4 +30,14 @@ class ProductRepository
             ->limit(5)
             ->get();
     }
+
+    public function decrementStock($productId, $quantity)
+    {
+        Product::where('id', $productId)->decrement('stock', $quantity);
+    }
+
+    public function incrementStock($productId, $quantity)
+    {
+        Product::where('id', $productId)->increment('stock', $quantity);
+    }
 }

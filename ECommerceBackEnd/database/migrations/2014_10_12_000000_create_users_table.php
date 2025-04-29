@@ -18,8 +18,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('image')->nullable();
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable()->unique();
             $table->enum("role", ["admin", "user", "manager"])->default("user");
             $table->rememberToken();
             $table->timestamp("created_at")->useCurrent();
