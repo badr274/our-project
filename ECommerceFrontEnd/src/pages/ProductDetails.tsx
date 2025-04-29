@@ -10,7 +10,6 @@ import { IProduct } from "@/interfaces";
 import { calcPriceDiscount } from "@/utils";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import productImage from "@/assets/ace.jpg";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const ProductDetails = () => {
   const dispatch = useAppDispatch();
   if (isLoading) return <MyProductDetailsSkeleton />;
   if (error) return <h1>Errror</h1>;
-  const { title, description, price, discountPercentage } =
+  const { title, description, price, discountPercentage, image } =
     data.product as IProduct;
 
   // const calcRating = () => {
@@ -59,17 +58,17 @@ const ProductDetails = () => {
           <ArrowLeft size={"16px"} />
           <span>Back</span>
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="product-images flex-1 flex flex-col gap-5">
+        <div className="grid grid-cols-12 gap-4">
+          <div className="product-images col-span-12 md:col-span-5 flex flex-col gap-5">
             <div className="image-container bg-gray-200 rounded-lg flex justify-center items-center">
               <img
-                src={productImage}
+                src={image}
                 alt="Product Image"
-                className=" w-fit max-w-full"
+                className="w-fit max-w-[300px]"
               />
             </div>
           </div>
-          <div className="product-details px-2 flex-1 flex flex-col gap-3">
+          <div className="product-details col-span-12 md:col-span-7 px-2 flex-1 flex flex-col gap-3">
             <h2 className="text-xl md:text-2xl  font-bold">{title}</h2>
             <div className="price-reviews flex  items-center justify-between">
               <div className="price flex items-center gap-2">

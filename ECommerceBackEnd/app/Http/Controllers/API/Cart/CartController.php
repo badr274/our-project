@@ -33,7 +33,7 @@ class CartController extends Controller
 
         $product->decrement('stock', $data['quantity']);
 
-        $cart = Cart::where('user_id', $data['user_id'])->get();
+        $cart = Cart::with(['product:id,title,price,discount,image'])->where('user_id', $data['user_id'])->get();
 
         return response()->json([
             'message' => 'Product added to cart successfully',
@@ -53,4 +53,13 @@ class CartController extends Controller
             'message' => 'Product removed from cart successfully'
         ], 200);
     }
+
+    public function index(): JsonResponse
+    {
+        $carts = Cart::with(['product:id,title,price,discount,image'])
+        ->where('user_id', auth()->id())
+        ->get();
+        return response()->json(['carts' => $carts], 200);
+    }
 }
+

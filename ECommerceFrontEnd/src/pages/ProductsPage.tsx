@@ -36,8 +36,8 @@ const ProductsPage = () => {
     });
 
   return (
-    <div className="mt-12 px-2">
-      <h1 className="text-xl lg:text-2xl font-bold mb-7">
+    <div className="mt-12 px-2 container mx-auto">
+      <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-7">
         Browse Our Collection
       </h1>
       <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3">
