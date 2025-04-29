@@ -13,7 +13,7 @@ export interface IProduct {
   discountPercentage: number;
   rating: number;
   stock: number;
-  thumbnail: string;
+  image: string;
   reviews: IReview[];
   quantity: number;
 }

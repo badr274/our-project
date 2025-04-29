@@ -10,7 +10,6 @@ import {
 import { IProduct } from "@/interfaces";
 import { useAppDispatch } from "@/app/hooks";
 import { addToCart } from "@/app/features/ShoppingCartSlice";
-import productImage from "@/assets/ace.jpg";
 import { truncateText } from "@/lib/utils";
 interface IProductCard {
   product: IProduct;
@@ -18,15 +17,16 @@ interface IProductCard {
 }
 const ProductCard = ({ product, productsPage }: IProductCard) => {
   const dispatch = useAppDispatch();
-  const { id, title, description } = product;
+  const { id, title, description, image } = product;
   const handleAddToCart = () => {
     dispatch(addToCart(product));
   };
+  console.log(product);
   return (
     <Card className="py-0 overflow-hidden">
       <Link to={`${productsPage ? `${id}` : `/products/${id}`}`}>
         <img
-          src={`${productImage}`}
+          src={`${image}`}
           alt="Product image"
           className="w-fit max-w-full"
         />
