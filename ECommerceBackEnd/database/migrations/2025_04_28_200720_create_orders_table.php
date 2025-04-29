@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->decimal('total_price', 10, 2);
+            $table->string('address')->nullable();
+            $table->string('phone')->nullable()->unique();
             $table->enum("status", ["pending", "processing", "shipped", "delivered"])->default("pending");
             $table->timestamp("created_at")->useCurrent();
             $table->timestamp("updated_at")->useCurrent()->useCurrentOnUpdate();

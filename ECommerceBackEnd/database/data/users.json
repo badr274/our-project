@@ -4,8 +4,6 @@
         "email": "emily.johnson@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/emilys/128",
-        "address": "626 Main Street",
-        "phone": "+81 965-431-3024",
         "role": "admin"
     },
     {
@@ -13,8 +11,6 @@
         "email": "michael.williams@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/michaelw/128",
-        "address": "385 Fifth Street",
-        "phone": "+49 258-627-6644",
         "role": "admin"
     },
     {
@@ -22,8 +18,6 @@
         "email": "sophia.brown@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/sophiab/128",
-        "address": "1642 Ninth Street",
-        "phone": "+81 210-652-2785",
         "role": "user"
     },
     {
@@ -31,8 +25,6 @@
         "email": "james.davis@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/jamesd/128",
-        "address": "238 Jefferson Street",
-        "phone": "+49 614-958-9364",
         "role": "user"
     },
     {
@@ -40,8 +32,6 @@
         "email": "emma.miller@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/emmaj/128",
-        "address": "607 Fourth Street",
-        "phone": "+91 759-776-1614",
         "role": "user"
     },
     {
@@ -49,8 +39,6 @@
         "email": "olivia.wilson@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/oliviaw/128",
-        "address": "547 First Street",
-        "phone": "+91 607-295-6448",
         "role": "user"
     },
     {
@@ -58,8 +46,6 @@
         "email": "alexander.jones@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/alexanderj/128",
-        "address": "664 Maple Street",
-        "phone": "+61 260-824-4986",
         "role": "user"
     },
     {
@@ -67,8 +53,6 @@
         "email": "ava.taylor@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/avat/128",
-        "address": "1197 First Street",
-        "phone": "+1 458-853-7877",
         "role": "user"
     },
     {
@@ -76,8 +60,6 @@
         "email": "ethan.martinez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/ethanm/128",
-        "address": "466 Pine Street",
-        "phone": "+92 933-608-5081",
         "role": "user"
     },
     {
@@ -85,8 +67,6 @@
         "email": "isabella.anderson@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/isabellad/128",
-        "address": "1964 Oak Street",
-        "phone": "+49 770-658-4885",
         "role": "user"
     },
     {
@@ -94,8 +74,6 @@
         "email": "liam.garcia@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/liamg/128",
-        "address": "576 Fifth Street",
-        "phone": "+92 870-217-6201",
         "role": "user"
     },
     {
@@ -103,8 +81,6 @@
         "email": "mia.rodriguez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/miar/128",
-        "address": "1627 Sixth Street",
-        "phone": "+49 989-461-8403",
         "role": "user"
     },
     {
@@ -112,8 +88,6 @@
         "email": "noah.hernandez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/noahh/128",
-        "address": "1413 Maple Street",
-        "phone": "+49 393-605-6968",
         "role": "user"
     },
     {
@@ -121,8 +95,6 @@
         "email": "charlotte.lopez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/charlottem/128",
-        "address": "208 Second Street",
-        "phone": "+44 373-953-5028",
         "role": "user"
     },
     {
@@ -130,8 +102,6 @@
         "email": "william.gonzalez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/williamg/128",
-        "address": "31 Maple Street",
-        "phone": "+81 905-252-7319",
         "role": "user"
     },
     {
@@ -139,8 +109,6 @@
         "email": "avery.perez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/averyp/128",
-        "address": "1125 First Street",
-        "phone": "+61 731-431-3457",
         "role": "user"
     },
     {
@@ -148,8 +116,6 @@
         "email": "evelyn.sanchez@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/evelyns/128",
-        "address": "1170 Lincoln Street",
-        "phone": "+1 623-880-6871",
         "role": "user"
     },
     {
@@ -157,8 +123,6 @@
         "email": "logan.torres@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/logant/128",
-        "address": "907 Seventh Street",
-        "phone": "+81 507-434-8733",
         "role": "user"
     },
     {
@@ -166,8 +130,6 @@
         "email": "abigail.rivera@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/abigailr/128",
-        "address": "996 Oak Street",
-        "phone": "+91 228-363-7806",
         "role": "admin"
     },
     {
@@ -175,8 +137,6 @@
         "email": "jackson.evans@x.dummyjson.com",
         "password": "password@123",
         "image": "https://dummyjson.com/icon/jacksone/128",
-        "address": "1873 Main Street",
-        "phone": "+44 468-628-6686",
         "role": "admin"
     },
     {
@@ -184,8 +144,6 @@
         "email": "hhazm6745@gmail.com",
         "password": "Hazem@2005",
         "image": "https://dummyjson.com/icon/emilyc/128",
-        "address": "1809 Fifth Street",
-        "phone": "+20 109-249-2013",
         "role": "manager"
     }
 ]

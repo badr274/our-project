@@ -27,4 +27,12 @@ class ProductService
             'SimilarProducts' => $similar
         ];
     }
+
+    public function checkStock($id, $quantity)
+    {
+        $product = $this->productRepo->find($id);
+        if ($product->stock < $quantity) {
+            throw new \Exception('Not enough stock');
+        }
+    }
 }
