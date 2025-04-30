@@ -36,11 +36,22 @@ class CartController extends Controller
     }
 
 
+    public function update(CartRequest $request, Cart $cart): JsonResponse
+    {
+        $cart = $this->cartService->updateCart($cart->id, $request->quantity);
+        return response()->json([
+            'message' => 'Product quantity updated successfully',
+            'cart' => $cart
+        ], 200);
+    }
+
+
     public function destroy(Cart $cart): JsonResponse
     {
-        $this->cartService->removeFromCart($cart->id);
+        $cart = $this->cartService->removeFromCart($cart->id);
         return response()->json([
-            'message' => 'Product removed from cart successfully'
+            'message' => 'Product removed from cart successfully',
+            'cart' => $cart
         ], 200);
     }
 }

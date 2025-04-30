@@ -37,10 +37,20 @@ class CartService
         return $this->cartRepo->getCartByUserId($userId);
     }
 
+    public function updateCart($id, $quantity)
+    {
+        $cart = $this->cartRepo->find($id);
+        $this->productService->checkStock($cart->product_id, $quantity);
+        $this->cartRepo->updateCart($id, ['quantity' => $quantity]);
+        $this->productRepo->decrementStock($cart->product_id, $quantity - $cart->quantity);
+        return $this->getCartByUserId($cart->user_id);
+    }
+
     public function removeFromCart($id)
     {
         $cart = $this->cartRepo->find($id);
         $this->productRepo->incrementStock($cart->product_id, $cart->quantity);
         $this->cartRepo->removeFromCart($id);
+        return $this->getCartByUserId($cart->user_id);
     }
 }
