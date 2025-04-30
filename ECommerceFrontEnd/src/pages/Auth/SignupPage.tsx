@@ -62,7 +62,7 @@ const SignupPage = () => {
   );
   return (
     <section className="py-32">
-      <div className="container">
+      <div className="container mx-auto">
         <div className="flex flex-col gap-4">
           <div className="mx-auto w-full max-w-sm rounded-md p-6 shadow">
             <div className="mb-6 flex flex-col items-center">
@@ -92,10 +92,6 @@ const SignupPage = () => {
                   ) : (
                     "Sign Up"
                   )}
-                </Button>
-                <Button variant="outline" className="w-full">
-                  {/* <FcGoogle className="mr-2 size-5" /> */}
-                  Sign up with Google
                 </Button>
               </form>
               <div className="mx-auto mt-8 flex justify-center gap-1 text-sm text-muted-foreground">

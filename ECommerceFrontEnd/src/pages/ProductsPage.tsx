@@ -16,7 +16,6 @@ const ProductsPage = () => {
     setVisibleCount((prev) => prev + 10);
     setLoading(false);
   };
-  console.log(loading);
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">

@@ -1,5 +1,4 @@
-import { removeFromCart } from "@/app/features/ShoppingCartSlice";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAppSelector } from "@/app/hooks";
 import QuantitySelector from "@/components/QuantitySelector";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,21 +14,34 @@ import {
 import { calcTotalPrice } from "@/utils";
 import { CircleX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import productImage from "@/assets/ace.jpg";
+import { ICartProduct } from "@/interfaces";
+import { useRemoveProductFromCartMutation } from "@/app/services/CartSlice";
+// import { setCartItems } from "@/app/features/ShoppingCartSlice";
 const CartPage = () => {
-  const { cartItems } = useAppSelector((state) => state.shoppingCart);
-  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector(
+    (state) => state.shoppingCart.cartItems || []
+  );
+  // const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const totalPrice = calcTotalPrice(cartItems);
+  const [removeFromCart] = useRemoveProductFromCartMutation();
+  const totalPrice = calcTotalPrice(cartItems as ICartProduct[]);
   const estimateShipping = cartItems.length ? 10 : 0;
+  // HANDLERS
+  const handleRemoveFromCart = async (id: number) => {
+    await removeFromCart({ product_id: id });
+    // .then((res) => {
+    // dispatch(setCartItems(res.data as ICartProduct[]));
+    // console.log(res.data);
+    // });
+  };
   // RENDERS
   return (
-    <div>
+    <div className="container">
       <h2 className="text-center font-bold text-2xl mb-12 mt-12">
         Your Cart [{cartItems.length} item{cartItems.length > 1 ? "s" : null}]
       </h2>
       <div className="flex flex-col lg:flex-row gap-4">
-        {cartItems.length ? (
+        {cartItems?.length ? (
           <Table>
             <TableCaption>A list of your recent items.</TableCaption>
             <TableHeader>
@@ -48,19 +60,21 @@ const CartPage = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <img
-                          src={productImage}
+                          src={item.product.image}
                           alt="product image"
                           className="max-w-[80px] lg:max-w-[120px]"
                         />
                         <h5 className="font-semibold mb-2 lg:text-lg">
-                          {item.title}
+                          {item.product.title}
                         </h5>
                       </div>
                     </TableCell>
                     <TableCell>Pending</TableCell>
                     <TableCell>
                       $
-                      {(item.price * item.quantity).toFixed(2).toLocaleString()}
+                      {(item.product.price * item.quantity)
+                        .toFixed(2)
+                        .toLocaleString()}
                     </TableCell>
                     <TableCell>
                       <QuantitySelector
@@ -71,7 +85,7 @@ const CartPage = () => {
                     <TableCell className="text-right">
                       <CircleX
                         className="mr-2 cursor-pointer inline hover:text-destructive transition"
-                        onClick={() => dispatch(removeFromCart(item))}
+                        onClick={() => handleRemoveFromCart(item.id)}
                       />
                     </TableCell>
                   </TableRow>

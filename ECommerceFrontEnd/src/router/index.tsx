@@ -8,12 +8,14 @@ import {
   createRoutesFromElements,
   Route,
 } from "react-router-dom";
-import PersistLogin from "@/components/auth/PersistLogin";
+import PersistLogin from "@/components/routes/PersistLogin";
 import AboutPage from "@/pages/AboutPage";
 import CartPage from "@/pages/CartPage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PricingPage from "@/pages/PricingPage";
 import SignupPage from "@/pages/Auth/SignupPage";
+import PageNotFound from "@/pages/PageNotFound";
+import ProtectedRoutes from "@/components/routes/ProtectedRoutes";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -22,14 +24,17 @@ const router = createBrowserRouter(
         <Route path="/about" element={<AboutPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="products/:id" element={<ProductDetails />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+        </Route>
         <Route path="/pricing" element={<PricingPage />} />
         <Route element={<PersistLogin />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<SignupPage />} />
         </Route>
       </Route>
+      <Route path="*" element={<PageNotFound />} />
     </>
   )
 );

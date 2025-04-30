@@ -1,12 +1,9 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAppDispatch } from "@/app/hooks";
-import {
-  changeQuantity,
-  decreaseQuantity,
-  increaseQuantity,
-} from "@/app/features/ShoppingCartSlice";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAddProductToCartMutation } from "@/app/services/CartSlice";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
 
 interface IProps {
   initialQuantity: number;
@@ -14,16 +11,36 @@ interface IProps {
 }
 const QuantitySelector = ({ initialQuantity = 1, id }: IProps) => {
   const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
   const [quantity, setQuantity] = useState(initialQuantity);
+  const [changeQuantityMutation] = useAddProductToCartMutation();
+  const changeQuantity = ({
+    id,
+    quantity,
+  }: {
+    id: number;
+    quantity: number;
+  }) => {
+    changeQuantityMutation({ product_id: id, quantity }).then((res) => {
+      dispatch(setCartItems(res.data?.cart));
+      console.log(cartItems);
+    });
+  };
+  const increase = () => {
+    setQuantity((prev) => prev + 1);
+    changeQuantity({ id: id, quantity });
+  };
+  const decrease = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1);
+      changeQuantity({ id: id, quantity });
+    }
+  };
 
-  const increase = () => dispatch(increaseQuantity(id));
-  const decrease = () => dispatch(decreaseQuantity(id));
-  useEffect(() => {
-    setQuantity(initialQuantity);
-  }, [initialQuantity]);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    dispatch(changeQuantity({ id: id, value: +value }));
+    setQuantity(+value);
+    changeQuantity({ id: id, quantity: +value });
   };
   return (
     <div className="flex items-center space-x-2">

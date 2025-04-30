@@ -131,17 +131,20 @@
     @apply bg-background text-foreground;
   }
 }
-
+.container {
+  @apply mx-auto px-2;
+}
 ::-webkit-scrollbar {
   background: #1a1b26; /* Slightly lighter than your dark background */
   border-radius: 4px;
+  width: 7px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3b3f51; /* Soft gray for contrast */
+  background: #606375; /* Soft gray for contrast */
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4b5165; /* Slightly lighter gray for interaction feedback */
+  background: #8a8f9e; /* Slightly lighter gray for interaction feedback */
 }
 /* Hide number input arrows for Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-inner-spin-button,

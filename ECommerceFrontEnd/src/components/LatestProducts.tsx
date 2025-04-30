@@ -18,7 +18,6 @@ const LatestProducts = () => {
       </div>
     );
   }
-  console.log(data);
   if (error) return <h1>Error</h1>;
   // Renders
   const renderProductList = data.latestProducts.map((product: IProduct) => {

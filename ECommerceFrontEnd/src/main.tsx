@@ -6,13 +6,16 @@ import { Provider } from "react-redux";
 import store, { persistor } from "./app/store.ts";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { PersistGate } from "redux-persist/integration/react";
+import { AuthDialogProvider } from "./context/AuthDialogContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider storageKey="theme">
       <Provider store={store}>
         <PersistGate persistor={persistor}>
-          <App />
+          <AuthDialogProvider>
+            <App />
+          </AuthDialogProvider>
         </PersistGate>
       </Provider>
     </ThemeProvider>

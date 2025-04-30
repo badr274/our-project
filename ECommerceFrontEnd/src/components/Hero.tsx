@@ -1,6 +1,6 @@
-import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/DALL·E 2025-03-10 13.37.11 - A modern and stylish eCommerce hero section image with a sky-inspired color scheme. The scene includes a shopping website interface on a laptop screen.webp";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface Hero1Props {
   heading: string;
@@ -29,10 +29,6 @@ const Hero1 = ({
       text: "🛒 Shop Now",
       url: "/products",
     },
-    secondary: {
-      text: "📖 Learn More",
-      url: "https://www.shadcnblocks.com",
-    },
   },
   image = {
     src: heroImage,
@@ -53,15 +49,7 @@ const Hero1 = ({
             <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
               {buttons.primary && (
                 <Button asChild className="w-full sm:w-auto">
-                  <a href="#">{buttons.primary.text}</a>
-                </Button>
-              )}
-              {buttons.secondary && (
-                <Button asChild variant="outline" className="w-full sm:w-auto">
-                  <a href="#">
-                    {buttons.secondary.text}
-                    <ArrowRight className="size-4" />
-                  </a>
+                  <Link to={buttons.primary.url}>{buttons.primary.text}</Link>
                 </Button>
               )}
             </div>
