@@ -1,3 +1,4 @@
+import AuthDialog from "@/components/AuthDialog";
 import { MyFooter } from "@/components/MyFooter";
 import { Navbar1 } from "@/components/Navbar";
 import { useEffect } from "react";
@@ -13,6 +14,7 @@ const AppLayout = () => {
     <div>
       <Navbar1 />
       <Outlet />
+      <AuthDialog />
       <MyFooter />
     </div>
   );

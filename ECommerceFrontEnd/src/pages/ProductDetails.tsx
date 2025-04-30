@@ -1,12 +1,15 @@
-import { addToCart } from "@/app/features/ShoppingCartSlice";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
 import { useAppDispatch } from "@/app/hooks";
+import { useAddProductToCartMutation } from "@/app/services/CartSlice";
 import { useGetSingleProductQuery } from "@/app/services/ProductsSlice";
 import MyCardSkeleton from "@/components/MyCardSkeleton";
 import MyProductDetailsSkeleton from "@/components/MyProductDetailsSkeleton";
 import ProductCard from "@/components/ProductCard";
 import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
+import { useAuthDialog } from "@/context/AuthDialogContext";
 import { IProduct } from "@/interfaces";
+import CookieService from "@/services/CookieService";
 import { calcPriceDiscount } from "@/utils";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,12 +17,25 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isLoading, data, error } = useGetSingleProductQuery(id);
+  console.log(data);
+  const { authDialogOpen } = useAuthDialog();
+  const [addProductToCart] = useAddProductToCartMutation();
   const dispatch = useAppDispatch();
   if (isLoading) return <MyProductDetailsSkeleton />;
   if (error) return <h1>Errror</h1>;
-  const { title, description, price, discountPercentage, image } =
+  const { title, description, price, discount, image } =
     data.product as IProduct;
-
+  // Handlers
+  const handleAddToCart = () => {
+    const token = CookieService.get("token");
+    if (!token) {
+      authDialogOpen();
+      return;
+    }
+    addProductToCart({ product_id: Number(id), quantity: 1 }).then((res) => {
+      dispatch(setCartItems(res.data?.cart));
+    });
+  };
   // const calcRating = () => {
   //   if (reviews) {
   //     let rating = 0;
@@ -38,10 +54,7 @@ const ProductDetails = () => {
       </div>
     );
   }
-  const handleAddToCart = () => {
-    if (!data) return;
-    dispatch(addToCart(data.product));
-  };
+
   // Renders
   const renderSimilarProducts = data.SimilarProducts.map(
     (product: IProduct) => {
@@ -72,17 +85,13 @@ const ProductDetails = () => {
             <h2 className="text-xl md:text-2xl  font-bold">{title}</h2>
             <div className="price-reviews flex  items-center justify-between">
               <div className="price flex items-center gap-2">
-                {discountPercentage > 0 ? (
+                {discount > 0 ? (
                   <>
                     <span className="old-price line-through text-gray-300">
                       ${price.toLocaleString()}
                     </span>
-                    <span className="new-price font-semibold">
-                      $
-                      {calcPriceDiscount(
-                        price,
-                        discountPercentage
-                      ).toLocaleString()}
+                    <span className="new-price text-lg font-bold">
+                      ${calcPriceDiscount(price, discount).toLocaleString()}
                     </span>
                   </>
                 ) : (

@@ -8,20 +8,31 @@ import {
   CardTitle,
 } from "./ui/card";
 import { IProduct } from "@/interfaces";
-import { useAppDispatch } from "@/app/hooks";
-import { addToCart } from "@/app/features/ShoppingCartSlice";
 import { truncateText } from "@/lib/utils";
+import { useAddProductToCartMutation } from "@/app/services/CartSlice";
+import CookieService from "@/services/CookieService";
+import { useAuthDialog } from "@/context/AuthDialogContext";
+import { useAppDispatch } from "@/app/hooks";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
 interface IProductCard {
   product: IProduct;
   productsPage?: boolean;
 }
 const ProductCard = ({ product, productsPage }: IProductCard) => {
   const dispatch = useAppDispatch();
+  const { authDialogOpen } = useAuthDialog();
   const { id, title, description, image } = product;
+  const [addProductToCart] = useAddProductToCartMutation();
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
+    const token = CookieService.get("token");
+    if (!token) {
+      authDialogOpen();
+      return;
+    }
+    addProductToCart({ product_id: id, quantity: 1 }).then((res) => {
+      dispatch(setCartItems(res.data?.cart));
+    });
   };
-  console.log(product);
   return (
     <Card className="py-0 overflow-hidden">
       <Link to={`${productsPage ? `${id}` : `/products/${id}`}`}>
@@ -31,7 +42,6 @@ const ProductCard = ({ product, productsPage }: IProductCard) => {
           className="w-fit max-w-full"
         />
       </Link>
-      {/* <div className="flex flex-col justify-between flex-1"> */}
       <CardHeader>
         <CardTitle>{truncateText(title)}</CardTitle>
         <CardDescription className="text-slate-500">
@@ -41,7 +51,6 @@ const ProductCard = ({ product, productsPage }: IProductCard) => {
       <CardFooter className="pb-6 mt-auto">
         <Button onClick={handleAddToCart}>Add to cart</Button>
       </CardFooter>
-      {/* </div> */}
     </Card>
   );
 };

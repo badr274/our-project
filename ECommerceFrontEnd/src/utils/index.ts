@@ -1,4 +1,4 @@
-import { IProduct } from "@/interfaces";
+import { ICartProduct, IProduct } from "@/interfaces";
 import { toast } from "react-hot-toast";
 
 export const calcPriceDiscount = (
@@ -25,9 +25,9 @@ export const addToShoppingCart = (
   return [...shoppingCartItems, { ...cartItem, quantity: 1 }];
 };
 
-export const calcTotalPrice = (cartItems: IProduct[]) => {
+export const calcTotalPrice = (cartItems: ICartProduct[]) => {
   const arrOfPrices = cartItems.length
-    ? cartItems.map((item) => item.price * item.quantity)
+    ? cartItems.map((item) => item.product.price * item.quantity)
     : [];
 
   const totalPrice = cartItems.length

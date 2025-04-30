@@ -1,18 +1,24 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { productsApiSlice } from "./services/ProductsSlice";
 import { AuthApiSlice } from "./auth/AuthApiSlice";
+import { productsApiSlice } from "./services/ProductsSlice";
+import { cartApiSlice } from "./services/CartSlice";
 import PersistShoppingCartReducer from "./features/ShoppingCartSlice";
 import persistStore from "redux-persist/es/persistStore";
 const store = configureStore({
   reducer: {
-    [productsApiSlice.reducerPath]: productsApiSlice.reducer,
     [AuthApiSlice.reducerPath]: AuthApiSlice.reducer,
+    [productsApiSlice.reducerPath]: productsApiSlice.reducer,
+    [cartApiSlice.reducerPath]: cartApiSlice.reducer,
     shoppingCart: PersistShoppingCartReducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
       serializableCheck: false,
-    }).concat([productsApiSlice.middleware, AuthApiSlice.middleware]);
+    }).concat([
+      productsApiSlice.middleware,
+      AuthApiSlice.middleware,
+      cartApiSlice.middleware,
+    ]);
   },
 });
 export default store;
