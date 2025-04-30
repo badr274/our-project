@@ -30,6 +30,7 @@ Route::get('/latest-products', HomeController::class);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/cart', [CartController::class, 'store']);
+    Route::put('/cart/{cart}', [CartController::class, 'update']);
     Route::delete('/cart/{cart}', [CartController::class, 'destroy']);
     Route::post('/wishlist', [WishlistController::class, 'store']);
     Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy']);
