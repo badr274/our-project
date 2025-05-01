@@ -9,12 +9,13 @@ import {
 } from "./ui/drawer";
 import { Button } from "./ui/button";
 import { ReactNode } from "react";
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { CircleX } from "lucide-react";
 import QuantitySelector from "./QuantitySelector";
 import { useNavigate } from "react-router-dom";
-import productImage from "@/assets/ace.jpg";
 import { useRemoveProductFromCartMutation } from "@/app/services/CartSlice";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
+import { ICartProduct } from "@/interfaces";
 interface IProps {
   children: ReactNode;
   isOpen: boolean;
@@ -22,22 +23,25 @@ interface IProps {
 }
 
 const ShoppingCart = ({ isOpen, setIsOpen, children }: IProps) => {
+  const dispatch = useAppDispatch();
   const [removeFromCart] = useRemoveProductFromCartMutation();
   const cartItems = useAppSelector(
     (state) => state.shoppingCart.cartItems || []
   );
   const navigate = useNavigate();
+  const handleClickStartShopping = () => {
+    navigate("/products");
+    setIsOpen(false);
+  };
   const handleClickShowMyCart = () => {
     navigate("/cart");
     setIsOpen(false);
   };
   // HANDLERS
   const handleRemoveFromCart = async (id: number) => {
-    await removeFromCart({ product_id: id });
-    // .then((res) => {
-    // dispatch(setCartItems(res.data as ICartProduct[]));
-    // console.log(res.data);
-    // });
+    await removeFromCart({ product_id: id }).then((res) => {
+      dispatch(setCartItems(res.data?.cart as ICartProduct[]));
+    });
   };
   // RENDERS
   const renderShoppingCartItems = cartItems.map((item) => {
@@ -83,9 +87,24 @@ const ShoppingCart = ({ isOpen, setIsOpen, children }: IProps) => {
           </DrawerTitle>
           <DrawerDescription></DrawerDescription>
         </DrawerHeader>
-        <div className="space-y-5 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
-          {renderShoppingCartItems}
-        </div>
+        {cartItems.length < 1 ? (
+          <div className="text-center space-y-2">
+            <p className="text-sm text-slate-500">
+              Looks like you haven’t added anything yet. <br /> Start shopping
+              now and discover amazing deals!
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => handleClickStartShopping()}
+            >
+              Start Shopping
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-5 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+            {renderShoppingCartItems}
+          </div>
+        )}
         <DrawerFooter>
           <Button onClick={handleClickShowMyCart}>Show my cart</Button>
           <DrawerClose asChild onClick={() => setIsOpen(false)}>

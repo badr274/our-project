@@ -13,8 +13,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { signupSchema } from "@/validation";
 import toast from "react-hot-toast";
+import { useGetCartProductsQuery } from "@/app/services/CartSlice";
 
 const SignupPage = () => {
+  const token = CookieService.get("token");
+  const { refetch } = useGetCartProductsQuery(undefined, {
+    skip: !token,
+  });
   // States
   const navigate = useNavigate();
   const [signUp, { isLoading }] = useSignupMutation();
@@ -27,16 +32,16 @@ const SignupPage = () => {
     try {
       const res = await signUp(signupData).unwrap();
       const date = new Date();
-      const IN_DAYS = 3;
+      const IN_DAYS = 1;
       const EXPIRES_AT = 1000 * 60 * 60 * 24 * IN_DAYS;
       date.setTime(date.getTime() + EXPIRES_AT);
       const options = { path: "/", expires: date };
       CookieService.set("token", res.token, options);
       toast.success("Signing up successfully!");
       setTimeout(() => {
-        navigate(-1);
+        navigate("/");
       }, 1500);
-      console.log(res);
+      refetch();
     } catch (error) {
       console.log(error);
     }
@@ -96,9 +101,9 @@ const SignupPage = () => {
               </form>
               <div className="mx-auto mt-8 flex justify-center gap-1 text-sm text-muted-foreground">
                 <p>Already have an account?</p>
-                <Link to={"/login"} className="font-medium text-primary">
-                  Log in
-                </Link>
+                <Button variant="link" className="font-medium p-0 m-0 h-fit">
+                  <Link to={"/login"}>Log in</Link>
+                </Button>
               </div>
             </div>
           </div>

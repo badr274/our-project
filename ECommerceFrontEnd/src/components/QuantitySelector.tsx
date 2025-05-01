@@ -1,8 +1,8 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { useAddProductToCartMutation } from "@/app/services/CartSlice";
+import { useAppDispatch } from "@/app/hooks";
+import { useUpdateProductInCartMutation } from "@/app/services/CartSlice";
 import { setCartItems } from "@/app/features/ShoppingCartSlice";
 
 interface IProps {
@@ -11,36 +11,43 @@ interface IProps {
 }
 const QuantitySelector = ({ initialQuantity = 1, id }: IProps) => {
   const dispatch = useAppDispatch();
-  const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
+  // const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
   const [quantity, setQuantity] = useState(initialQuantity);
-  const [changeQuantityMutation] = useAddProductToCartMutation();
-  const changeQuantity = ({
+  const [changeQuantityMutation] = useUpdateProductInCartMutation();
+
+  useEffect(() => {
+    setQuantity(initialQuantity);
+  }, [initialQuantity]);
+
+  const changeQuantity = async ({
     id,
     quantity,
   }: {
     id: number;
     quantity: number;
   }) => {
-    changeQuantityMutation({ product_id: id, quantity }).then((res) => {
+    await changeQuantityMutation({ product_id: id, quantity }).then((res) => {
       dispatch(setCartItems(res.data?.cart));
-      console.log(cartItems);
     });
   };
-  const increase = () => {
-    setQuantity((prev) => prev + 1);
-    changeQuantity({ id: id, quantity });
+  const increase = async () => {
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    await changeQuantity({ id, quantity: newQuantity });
   };
-  const decrease = () => {
+  const decrease = async () => {
     if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-      changeQuantity({ id: id, quantity });
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      await changeQuantity({ id, quantity: newQuantity });
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
+    if (+value < 1 || isNaN(+value)) return;
     setQuantity(+value);
-    changeQuantity({ id: id, quantity: +value });
+    await changeQuantity({ id: id, quantity: +value });
   };
   return (
     <div className="flex items-center space-x-2">
