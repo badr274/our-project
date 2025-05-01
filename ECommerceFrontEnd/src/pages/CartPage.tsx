@@ -1,4 +1,4 @@
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import QuantitySelector from "@/components/QuantitySelector";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,23 +16,21 @@ import { CircleX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ICartProduct } from "@/interfaces";
 import { useRemoveProductFromCartMutation } from "@/app/services/CartSlice";
-// import { setCartItems } from "@/app/features/ShoppingCartSlice";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
 const CartPage = () => {
   const cartItems = useAppSelector(
     (state) => state.shoppingCart.cartItems || []
   );
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [removeFromCart] = useRemoveProductFromCartMutation();
   const totalPrice = calcTotalPrice(cartItems as ICartProduct[]);
   const estimateShipping = cartItems.length ? 10 : 0;
   // HANDLERS
   const handleRemoveFromCart = async (id: number) => {
-    await removeFromCart({ product_id: id });
-    // .then((res) => {
-    // dispatch(setCartItems(res.data as ICartProduct[]));
-    // console.log(res.data);
-    // });
+    await removeFromCart({ product_id: id }).then((res) => {
+      dispatch(setCartItems(res.data?.cart as ICartProduct[]));
+    });
   };
   // RENDERS
   return (

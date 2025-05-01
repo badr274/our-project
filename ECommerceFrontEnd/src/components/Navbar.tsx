@@ -94,7 +94,9 @@ const Navbar1 = ({
 }: Navbar1Props) => {
   const token = CookieService.get("token");
   const { theme, setTheme } = useModeTheme();
-  const { data: cartData } = useGetCartProductsQuery();
+  const { data: cartData } = useGetCartProductsQuery(undefined, {
+    skip: !token,
+  });
   const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -109,7 +111,7 @@ const Navbar1 = ({
     try {
       await logout(token).unwrap();
       CookieService.remove("token");
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
     }

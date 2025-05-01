@@ -16,9 +16,10 @@ import PricingPage from "@/pages/PricingPage";
 import SignupPage from "@/pages/Auth/SignupPage";
 import PageNotFound from "@/pages/PageNotFound";
 import ProtectedRoutes from "@/components/routes/ProtectedRoutes";
+import ErrorElement from "@/components/ErrorElement";
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <>
+    <Route errorElement={<ErrorElement />}>
       <Route path="/" element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -29,13 +30,13 @@ const router = createBrowserRouter(
           <Route path="/checkout" element={<CheckoutPage />} />
         </Route>
         <Route path="/pricing" element={<PricingPage />} />
-        <Route element={<PersistLogin />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<SignupPage />} />
-        </Route>
+      </Route>
+      <Route element={<PersistLogin />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<SignupPage />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
-    </>
+    </Route>
   )
 );
 export default router;

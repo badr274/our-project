@@ -32,6 +32,16 @@ export const cartApiSlice = createApi({
         body: args,
       }),
     }),
+    updateProductInCart: build.mutation<
+      { message: string; cart: ICartProduct[] | undefined },
+      { product_id: number; quantity: number }
+    >({
+      query: (args) => ({
+        url: `/cart/${args.product_id}`,
+        method: "PUT",
+        body: args,
+      }),
+    }),
     removeProductFromCart: build.mutation<
       { message: string; cart: ICartProduct[] | undefined },
       { product_id: number }
@@ -47,4 +57,5 @@ export const {
   useGetCartProductsQuery,
   useAddProductToCartMutation,
   useRemoveProductFromCartMutation,
+  useUpdateProductInCartMutation,
 } = cartApiSlice;
