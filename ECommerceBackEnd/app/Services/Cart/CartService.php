@@ -29,7 +29,7 @@ class CartService
         $this->productService->checkStock($productId, $quantity);
         $cart = $this->cartRepo->findcart($userId, $productId);
         if ($cart) {
-            $this->cartRepo->updateCart($userId, ['quantity' => $cart->quantity + $quantity]);
+            $this->cartRepo->updateCart($cart->id, ['quantity' => $cart->quantity + $quantity]);
         } else {
             $this->cartRepo->addToCart($userId, $productId, $quantity);
         }
@@ -41,7 +41,7 @@ class CartService
     {
         $cart = $this->cartRepo->find($id);
         $this->productService->checkStock($cart->product_id, $quantity);
-        $this->cartRepo->updateCart($id, ['quantity' => $quantity]);
+        $this->cartRepo->updateCart($cart->id, ['quantity' => $quantity]);
         $this->productRepo->decrementStock($cart->product_id, $quantity - $cart->quantity);
         return $this->getCartByUserId($cart->user_id);
     }

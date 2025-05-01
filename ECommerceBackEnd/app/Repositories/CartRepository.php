@@ -37,8 +37,9 @@ class CartRepository
         Cart::where('id', $id)->delete();
     }
 
-    public function updateCart($userId, $data)
+    public function updateCart($Id, $data)
     {
-        Cart::where('user_id', $userId)->update($data);
+        Cart::where('id', $Id)
+            ->update($data);
     }
 }
