@@ -21,6 +21,9 @@ const CartPage = () => {
   const cartItems = useAppSelector(
     (state) => state.shoppingCart.cartItems || []
   );
+
+  // Handle Payment
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [removeFromCart] = useRemoveProductFromCartMutation();
@@ -124,7 +127,7 @@ const CartPage = () => {
           <div>
             <Button
               className="w-full mt-7"
-              onClick={() => navigate("/checkout")}
+              onClick={() => navigate("/payment-page")}
             >
               Check Out
             </Button>
