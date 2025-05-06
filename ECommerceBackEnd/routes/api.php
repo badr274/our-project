@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Home\HomeController;
 use App\Http\Controllers\API\Product\ProductController;
 use App\Http\Controllers\API\Cart\CartController;
 use App\Http\Controllers\API\Wishlist\WishlistController;
+use App\Http\Controllers\API\Payment\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,4 +37,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy']);
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/create-payment-intent', [PaymentController::class, 'createPaymentIntent']);
 });
