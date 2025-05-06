@@ -17,6 +17,7 @@ import SignupPage from "@/pages/Auth/SignupPage";
 import PageNotFound from "@/pages/PageNotFound";
 import ProtectedRoutes from "@/components/routes/ProtectedRoutes";
 import ErrorElement from "@/components/ErrorElement";
+import PaymentPage from "@/pages/PaymentPage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorElement />}>
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
         <Route element={<ProtectedRoutes />}>
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment-page" element={<PaymentPage />} />
         </Route>
         <Route path="/pricing" element={<PricingPage />} />
       </Route>
