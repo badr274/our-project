@@ -42,4 +42,9 @@ class CartRepository
         Cart::where('id', $Id)
             ->update($data);
     }
+
+    public function clearCart($userId)
+    {
+        Cart::where('user_id', $userId)->delete();
+    }
 }

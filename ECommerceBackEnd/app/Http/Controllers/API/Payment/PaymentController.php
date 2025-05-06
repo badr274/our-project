@@ -27,6 +27,7 @@ class PaymentController extends Controller
 
             return response()->json([
                 'clientSecret' => $paymentIntent->client_secret,
+                'user' => auth()->user()
             ]);
         } catch (\Exception $e) {
             return response()->json([
