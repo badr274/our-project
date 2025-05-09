@@ -21,8 +21,8 @@ class CartController extends Controller
 
     public function index(): JsonResponse
     {
-        $carts = $this->cartService->getCartByUserId(auth()->id());
-        return response()->json(['carts' => $carts], 200);
+        $cart = $this->cartService->getCartByUserId(auth()->id());
+        return response()->json(['cart' => $cart], 200);
     }
 
 

@@ -59,4 +59,27 @@ class OrderService
             return $this->orderRepo->getOrders($userId);
         });
     }
+
+    public function getOrder(int $orderId)
+    {
+        $order = $this->orderRepo->getOrder($orderId);
+
+        $order->load('products');
+
+        return [
+            'id' => $order->id,
+            'total_price' => $order->total_price,
+            'address' => $order->address,
+            'phone' => $order->phone,
+            'status' => $order->status,
+            'products' => $order->products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'quantity' => $product->pivot->quantity,
+                    'price_at_order' => $product->pivot->price_at_order,
+                ];
+            }),
+        ];
+    }
 }

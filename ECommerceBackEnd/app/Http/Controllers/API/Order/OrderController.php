@@ -23,7 +23,7 @@ class OrderController extends Controller
     public function index(): JsonResponse
     {
         $orders = $this->orderService->getOrders(auth()->user()->id);
-        return response()->json(['orders' => $orders], 200);
+        return response()->json(['order' => $orders], 200);
     }
 
     /**
@@ -32,7 +32,7 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request): JsonResponse
     {
         $orders = $this->orderService->createOrder($request->validated());
-        return response()->json(['orders' => $orders], 200);
+        return response()->json(['order' => $orders, 'cart' => []], 200);
     }
 
     /**
@@ -40,16 +40,17 @@ class OrderController extends Controller
      */
     public function show(Order $order): JsonResponse
     {
+        $order = $this->orderService->getOrder($order->id);
         return response()->json(['order' => $order], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update the specified resource in storage.
      */
-    public function destroy(Order $order)
+    public function update_status(Request $request, Order $order)
     {
-        $order->status = 'cancelled';
+        $order->status = "cancelled";
         $order->save();
-        return response()->json(['message' => 'Order cancelled successfully'], 200);
+        return response()->json(['message' => 'Order status updated successfully'], 200);
     }
 }
