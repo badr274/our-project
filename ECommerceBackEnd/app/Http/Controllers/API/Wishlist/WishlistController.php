@@ -35,6 +35,7 @@ class WishlistController extends Controller
     public function destroy(Wishlist $wishlist)
     {
         $this->wishlistService->removeFromWishlist($wishlist->id);
-        return response()->json(['message' => 'Product removed from wishlist successfully'], 200);
+        $wishlists = $this->wishlistService->getWishlists(auth()->user()->id);
+        return response()->json(['message' => 'Product removed from wishlist successfully', 'wishlists' => $wishlists], 200);
     }
 }
