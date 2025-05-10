@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Auth\AuthController;
-use App\Http\Controllers\API\Home\HomeController;
-use App\Http\Controllers\API\Product\ProductController;
-use App\Http\Controllers\API\Cart\CartController;
-use App\Http\Controllers\API\Wishlist\WishlistController;
-use App\Http\Controllers\API\Payment\PaymentController;
-use App\Http\Controllers\API\Order\OrderController;
+use App\Http\Controllers\API\Web\Auth\AuthController;
+use App\Http\Controllers\API\Web\Home\HomeController;
+use App\Http\Controllers\API\Web\Product\ProductController;
+use App\Http\Controllers\API\Web\Cart\CartController;
+use App\Http\Controllers\API\Web\Wishlist\WishlistController;
+use App\Http\Controllers\API\Web\Payment\PaymentController;
+use App\Http\Controllers\API\Web\Order\OrderController;
 
 /*
 |--------------------------------------------------------------------------

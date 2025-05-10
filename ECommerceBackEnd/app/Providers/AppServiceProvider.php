@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Strategies\Login\LoginStrategyInterface;
-use App\Strategies\Login\DefaultLoginStrategy;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -14,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(LoginStrategyInterface::class, DefaultLoginStrategy::class);
+        //
     }
 
     /**

@@ -40,4 +40,20 @@ class ProductRepository
     {
         Product::where('id', $productId)->increment('stock', $quantity);
     }
+
+    public function create($data)
+    {
+        return Product::create($data);
+    }
+
+    public function update($product, $data)
+    {
+        $product->update($data);
+        return $product;
+    }
+
+    public function delete($product)
+    {
+        return $product->delete();
+    }
 }
