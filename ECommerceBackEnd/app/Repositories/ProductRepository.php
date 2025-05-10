@@ -31,16 +31,6 @@ class ProductRepository
             ->get();
     }
 
-    public function decrementStock($productId, $quantity)
-    {
-        Product::where('id', $productId)->decrement('stock', $quantity);
-    }
-
-    public function incrementStock($productId, $quantity)
-    {
-        Product::where('id', $productId)->increment('stock', $quantity);
-    }
-
     public function create($data)
     {
         return Product::create($data);
