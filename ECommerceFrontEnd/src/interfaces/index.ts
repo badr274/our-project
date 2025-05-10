@@ -51,3 +51,16 @@ export interface IWishlist {
   id: number;
   product: IProduct;
 }
+export interface IOrder {
+  id: number;
+  total_price: string | number;
+  address: string;
+  phone: string;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  created_at?: string;
+  updated_at?: string;
+}
+export interface IOrderResponse {
+  order: IOrder[];
+  cart: [];
+}

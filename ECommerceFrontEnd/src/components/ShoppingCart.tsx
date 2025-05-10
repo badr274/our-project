@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useRemoveProductFromCartMutation } from "@/app/services/CartSlice";
 import { setCartItems } from "@/app/features/ShoppingCartSlice";
 import { ICartProduct } from "@/interfaces";
+import { calcPriceAfterDiscount } from "@/utils";
 interface IProps {
   children: ReactNode;
   isOpen: boolean;
@@ -61,7 +62,13 @@ const ShoppingCart = ({ isOpen, setIsOpen, children }: IProps) => {
               Category: {item.product.category}
             </div>
             <strong className="text-[14px] lg:text-base">
-              ${(item.product.price * item.quantity).toLocaleString()}
+              $
+              {(
+                calcPriceAfterDiscount(
+                  item.product.price,
+                  item.product.discount
+                ) * item.quantity
+              ).toLocaleString()}
             </strong>
             <div className="text-destructive mb-2">
               Quantity:

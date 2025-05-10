@@ -17,7 +17,6 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isLoading, data, error } = useGetSingleProductQuery(id);
-  console.log(data);
   const { authDialogOpen } = useAuthDialog();
   const [addProductToCart] = useAddProductToCartMutation();
   const dispatch = useAppDispatch();
@@ -36,15 +35,6 @@ const ProductDetails = () => {
       dispatch(setCartItems(res.data?.cart));
     });
   };
-  // const calcRating = () => {
-  //   if (reviews) {
-  //     let rating = 0;
-  //     for (let i = 0; i < reviews.length; i++) {
-  //       rating += reviews[i].rating;
-  //     }
-  //     return rating;
-  //   }
-  // };
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
@@ -56,7 +46,7 @@ const ProductDetails = () => {
   }
 
   // Renders
-  const renderSimilarProducts = data.SimilarProducts.map(
+  const renderSimilarProducts = data.similarProducts.map(
     (product: IProduct) => {
       return <ProductCard key={product.id} product={product} />;
     }
