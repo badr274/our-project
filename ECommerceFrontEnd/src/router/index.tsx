@@ -20,6 +20,7 @@ import ErrorElement from "@/components/ErrorElement";
 import WishlistPage from "@/pages/WishlistPage";
 import OrdersPage from "@/pages/OrdersPage";
 import TrackOrderPage from "@/pages/TrackOrderPage";
+import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorElement />}>
@@ -32,6 +33,7 @@ const router = createBrowserRouter(
           <Route path="/cart" element={<CartPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment-confirm" element={<PaymentSuccessPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:orderId" element={<TrackOrderPage />} />
         </Route>

@@ -14,6 +14,7 @@ import { useAddOrderMutation } from "@/app/services/OrderSlice";
 import { useAppDispatch } from "@/app/hooks";
 import { setCartItems } from "@/app/features/ShoppingCartSlice";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type FormValues = yup.InferType<typeof checkoutFormSchema>;
 const CheckoutForm = () => {
@@ -24,6 +25,7 @@ const CheckoutForm = () => {
   const [loading, setLoading] = useState(false);
   const [addOrder] = useAddOrderMutation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -80,7 +82,16 @@ const CheckoutForm = () => {
       } else if (result.paymentIntent?.status === "succeeded") {
         dispatch(setCartItems(orderData.cart));
         toast.success("Order completed successfully");
-        console.log(orderData.order);
+        setTimeout(() => {
+          const latestOrder = orderData.order[orderData.order.length - 1];
+          navigate(
+            `/payment-confirm?total=${latestOrder.total_price}&orderId=${
+              latestOrder.id
+            }&orderDate=${new Date(
+              latestOrder.created_at as string
+            ).toLocaleDateString()}`
+          );
+        }, 500);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
