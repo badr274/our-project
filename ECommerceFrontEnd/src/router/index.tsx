@@ -17,8 +17,9 @@ import SignupPage from "@/pages/Auth/SignupPage";
 import PageNotFound from "@/pages/PageNotFound";
 import ProtectedRoutes from "@/components/routes/ProtectedRoutes";
 import ErrorElement from "@/components/ErrorElement";
-import PaymentPage from "@/pages/PaymentPage";
 import WishlistPage from "@/pages/WishlistPage";
+import OrdersPage from "@/pages/OrdersPage";
+import TrackOrderPage from "@/pages/TrackOrderPage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorElement />}>
@@ -31,7 +32,8 @@ const router = createBrowserRouter(
           <Route path="/cart" element={<CartPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/payment-page" element={<PaymentPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:orderId" element={<TrackOrderPage />} />
         </Route>
         <Route path="/pricing" element={<PricingPage />} />
       </Route>

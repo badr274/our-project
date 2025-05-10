@@ -12,7 +12,7 @@ import { truncateText } from "@/lib/utils";
 import { useAddProductToCartMutation } from "@/app/services/CartSlice";
 import CookieService from "@/services/CookieService";
 import { useAuthDialog } from "@/context/AuthDialogContext";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAppDispatch } from "@/app/hooks";
 import { setCartItems } from "@/app/features/ShoppingCartSlice";
 import {
   useAddItemToWishlistMutation,
@@ -33,7 +33,7 @@ const ProductCard = ({
   wishProductId,
 }: IProductCard) => {
   const { pathname } = useLocation();
-  const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
+  // const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
   const dispatch = useAppDispatch();
   const { authDialogOpen } = useAuthDialog();
   const { id, title, description, image } = product;
@@ -81,8 +81,7 @@ const ProductCard = ({
       const { data } = await removeItemFromWishlist({
         product_id: wishProductId as number,
       });
-      console.log(data);
-      // dispatch(setWishlist(data?.wishlists));
+      dispatch(setWishlist(data?.wishlists));
     } catch (error) {
       console.log(error);
     }
