@@ -23,7 +23,7 @@ class WishlistRequest extends FormRequest
     {
         $userId = auth()->user()->id;
         return [
-            'product_id' => 'required|exists:products,id|unique:wishlists,product_id,user_id,' . $userId,
+            'product_id' => 'required|exists:products,id|unique:wishlists,product_id,user_id' . $userId,
         ];
     }
 }

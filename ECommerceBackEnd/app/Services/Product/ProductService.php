@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Traits\HasImage;
 
-class ProductService
+class ProductService extends InventoryService
 {
     use HasImage;
 
@@ -56,14 +56,5 @@ class ProductService
             'product' => $product,
             'similarProducts' => $similar
         ];
-    }
-
-    public function checkStock($id, int $quantity)
-    {
-        $product = $this->productRepo->find($id);
-
-        if ($product->stock < $quantity) {
-            throw new \Exception('Not enough stock');
-        }
     }
 }

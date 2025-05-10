@@ -3,20 +3,17 @@
 namespace App\Services\Cart;
 
 use App\Repositories\CartRepository;
-use App\Repositories\ProductRepository;
 use App\Services\Product\ProductService;
 
 class CartService
 {
     protected CartRepository $cartRepo;
     protected ProductService $productService;
-    protected ProductRepository $productRepo;
 
-    public function __construct(CartRepository $cartRepo, ProductService $productService, ProductRepository $productRepo)
+    public function __construct(CartRepository $cartRepo, ProductService $productService)
     {
         $this->cartRepo = $cartRepo;
         $this->productService = $productService;
-        $this->productRepo = $productRepo;
     }
 
     public function getCartByUserId($userId)
@@ -33,7 +30,7 @@ class CartService
         } else {
             $this->cartRepo->addToCart($userId, $productId, $quantity);
         }
-        $this->productRepo->decrementStock($productId, $quantity);
+        $this->productService->decrementStock($productId, $quantity);
         return $this->cartRepo->getCartByUserId($userId);
     }
 
@@ -42,14 +39,14 @@ class CartService
         $cart = $this->cartRepo->find($id);
         $this->productService->checkStock($cart->product_id, $quantity);
         $this->cartRepo->updateCart($cart->id, ['quantity' => $quantity]);
-        $this->productRepo->decrementStock($cart->product_id, $quantity - $cart->quantity);
+        $this->productService->decrementStock($cart->product_id, $quantity - $cart->quantity);
         return $this->getCartByUserId($cart->user_id);
     }
 
     public function removeFromCart($id)
     {
         $cart = $this->cartRepo->find($id);
-        $this->productRepo->incrementStock($cart->product_id, $cart->quantity);
+        $this->productService->incrementStock($cart->product_id, $cart->quantity);
         $this->cartRepo->removeFromCart($id);
         return $this->getCartByUserId($cart->user_id);
     }
