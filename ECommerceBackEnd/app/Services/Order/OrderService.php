@@ -18,6 +18,11 @@ class OrderService
         $this->cartRepo = $cartRepo;
     }
 
+    public function getAllOrders()
+    {
+        return $this->orderRepo->getAllOrders();
+    }
+
     public function getOrders(int $userId)
     {
         return $this->orderRepo->getOrders($userId);
@@ -81,5 +86,15 @@ class OrderService
                 ];
             }),
         ];
+    }
+
+    public function updateOrderStatus($order, int $status)
+    {
+        return $this->orderRepo->updateOrderStatus($order, $status);
+    }
+
+    public function deleteOrder($order)
+    {
+        return $this->orderRepo->deleteOrder($order);
     }
 }
