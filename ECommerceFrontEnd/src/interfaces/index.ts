@@ -47,3 +47,7 @@ export interface ICartProduct {
   product: IProduct;
   quantity: number;
 }
+export interface IWishlist {
+  id: number;
+  product: IProduct;
+}

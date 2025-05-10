@@ -19,7 +19,7 @@ export const cartApiSlice = createApi({
     },
   }),
   endpoints: (build) => ({
-    getCartProducts: build.query<{ carts: ICartProduct[] | undefined }, void>({
+    getCartProducts: build.query<{ cart: ICartProduct[] | undefined }, void>({
       query: () => "/cart",
     }),
     addProductToCart: build.mutation<

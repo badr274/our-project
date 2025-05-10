@@ -86,6 +86,10 @@ const Navbar1 = ({
       title: "About",
       url: "/about",
     },
+    {
+      title: "Wishlist",
+      url: "/wishlist",
+    },
   ],
   auth = {
     login: { text: "Log in", url: "/login" },
@@ -100,8 +104,8 @@ const Navbar1 = ({
   const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setCartItems(cartData?.carts));
-  }, [cartData?.carts, dispatch]);
+    dispatch(setCartItems(cartData?.cart));
+  }, [cartData?.cart, dispatch]);
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
@@ -111,7 +115,6 @@ const Navbar1 = ({
     try {
       await logout(token).unwrap();
       CookieService.remove("token");
-      // window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -161,7 +164,7 @@ const Navbar1 = ({
                 >
                   <ShoppingBasket />
                   <span className="absolute top-[-4px] right-[-4px]  z-10 w-4 h-4 text-[10px] bg-destructive rounded-full text-white flex justify-center items-center">
-                    {cartItems?.length}
+                    {cartItems?.length || 0}
                   </span>
                 </Button>
               </ShoppingCart>

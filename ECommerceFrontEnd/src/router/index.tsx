@@ -18,6 +18,7 @@ import PageNotFound from "@/pages/PageNotFound";
 import ProtectedRoutes from "@/components/routes/ProtectedRoutes";
 import ErrorElement from "@/components/ErrorElement";
 import PaymentPage from "@/pages/PaymentPage";
+import WishlistPage from "@/pages/WishlistPage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorElement />}>
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
         <Route path="products/:id" element={<ProductDetails />} />
         <Route element={<ProtectedRoutes />}>
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/payment-page" element={<PaymentPage />} />
         </Route>
