@@ -33,6 +33,7 @@ class WishlistService
 
     public function removeFromWishlist($id)
     {
-        return $this->wishlistRepository->removeFromWishlist($id);
+        $this->wishlistRepository->removeFromWishlist($id);
+        return $this->getWishlists(auth()->user()->id);
     }
 }
