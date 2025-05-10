@@ -4,11 +4,13 @@ namespace App\Services\Product;
 
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
+use App\Traits\HasImage;
 
 class ProductService
 {
+    use HasImage;
+
     protected ProductRepository $productRepo;
 
     public function __construct(ProductRepository $productRepo)
@@ -23,14 +25,14 @@ class ProductService
 
     public function createProduct(Request $request, array $data)
     {
-        $data['image'] = $this->handleImageUpload($request);
+        $data['image'] = $this->handleImageUpload($request, 'products');
 
         return $this->productRepo->create($data);
     }
 
     public function updateProduct(Product $product, array $data, Request $request)
     {
-        $newImage = $this->handleImageUpload($request, $product->image);
+        $newImage = $this->handleImageUpload($request, 'products', $product->image);
 
         if ($newImage) {
             $data['image'] = $newImage;
@@ -41,26 +43,8 @@ class ProductService
 
     public function deleteProduct(Product $product)
     {
-        $this->deleteImage($product->image);
+        $this->deleteImage($product->image, 'products');
         $this->productRepo->delete($product);
-    }
-
-    protected function handleImageUpload(Request $request, $oldImage = null)
-    {
-        if (!$request->hasFile('image')) {
-            return null;
-        }
-
-        $this->deleteImage($oldImage);
-
-        return $request->file('image')->store('products', 'public');
-    }
-
-    protected function deleteImage(?string $img)
-    {
-        if ($img && Storage::disk('public')->exists($img)) {
-            Storage::disk('public')->delete($img);
-        }
     }
 
     public function getWithSimilar($id)
