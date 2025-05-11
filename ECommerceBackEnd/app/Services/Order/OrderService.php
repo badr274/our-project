@@ -32,37 +32,65 @@ class OrderService
     {
         return DB::transaction(function () use ($data) {
             $userId = Auth::id();
-            $cartItems = $this->cartRepo->getCartByUserId($userId);
-
-            if ($cartItems->isEmpty()) {
-                throw new \Exception("Cart is empty");
-            }
-
-            $productData = [];
-            $totalPrice = 0;
-
-            foreach ($cartItems as $item) {
-                $price = $item->product->price - ($item->product->price * $item->product->discount / 100);
-                $productData[$item->product_id] = [
-                    'quantity'        => $item->quantity,
-                    'price_at_order'  => $price,
-                ];
-                $totalPrice += $item->quantity * $price;
-            }
-
-            $order = $this->orderRepo->createOrder([
-                'user_id'     => $userId,
-                'total_price' => $totalPrice,
-                'address'     => $data['address'],
-                'phone'       => $data['phone'],
-            ]);
-
-            $order->products()->attach($productData);
-
+            $cartItems = $this->validateAndGetCartItems($userId);
+            $orderData = $this->prepareOrderData($cartItems, $data);
+            $order = $this->createOrderRecord($orderData);
+            $this->attachProductsToOrder($order, $orderData['productData']);
             $this->cartRepo->clearCart($userId);
-
             return $this->orderRepo->getOrders($userId);
         });
+    }
+
+    private function validateAndGetCartItems(int $userId)
+    {
+        $cartItems = $this->cartRepo->getCartByUserId($userId);
+        if ($cartItems->isEmpty()) {
+            throw new \Exception("Cart is empty");
+        }
+        return $cartItems;
+    }
+
+    private function prepareOrderData($cartItems, array $data): array
+    {
+        $productData = [];
+        $totalPrice = 0;
+
+        foreach ($cartItems as $item) {
+            $price = $this->calculateDiscountedPrice($item->product);
+            $productData[$item->product_id] = [
+                'quantity' => $item->quantity,
+                'price_at_order' => $price,
+            ];
+            $totalPrice += $item->quantity * $price;
+        }
+
+        return [
+            'user_id' => Auth::id(),
+            'total_price' => $totalPrice,
+            'address' => $data['address'],
+            'phone' => $data['phone'],
+            'productData' => $productData
+        ];
+    }
+
+    private function calculateDiscountedPrice($product): float
+    {
+        return $product->price - ($product->price * $product->discount / 100);
+    }
+
+    private function createOrderRecord(array $orderData)
+    {
+        return $this->orderRepo->createOrder([
+            'user_id' => $orderData['user_id'],
+            'total_price' => $orderData['total_price'],
+            'address' => $orderData['address'],
+            'phone' => $orderData['phone'],
+        ]);
+    }
+
+    private function attachProductsToOrder($order, array $productData): void
+    {
+        $order->products()->attach($productData);
     }
 
     public function getOrder(int $orderId)

@@ -176,5 +176,4 @@ Before you begin, ensure you have the following installed:
 ## Additional Resources
 
 - [Laravel Documentation](https://laravel.com/docs)
-- [Vue.js Documentation](https://vuejs.org/guide/introduction.html)
 - [Vite Documentation](https://vitejs.dev/guide/) 
