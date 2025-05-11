@@ -37,7 +37,7 @@ const ProductDetails = () => {
   };
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
+      <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
         {[...Array(10)].map((_, idx) => (
           <MyCardSkeleton key={idx} />
         ))}
@@ -99,23 +99,23 @@ const ProductDetails = () => {
               <h4 className="text-lg font-semibold mb-2">Description:</h4>
               <p className="text-sm font-medium text-gray-500">{description}</p>
             </div>
-            <div className="buttons-action flex items-center gap-4 mt-3 flex-1">
+            <div className="buttons-action flex items-end justify-center gap-4 mt-3 flex-1">
               <Button
                 variant={"destructive"}
-                className="flex-1"
+                className="w-full sm:w-1/2 mb-5"
                 onClick={handleAddToCart}
               >
                 Add to cart
               </Button>
-              <Button variant={"secondary"} className="flex-1">
-                Buy Now
-              </Button>
+              {/* <Button variant={"secondary"} className="flex-1">
+               <Link to=''></Link>
+              </Button> */}
             </div>
           </div>
         </div>
         <div className="container mx-auto mt-12">
           <h2 className="font-bold text-2xl mb-7">Similar Products:</h2>
-          <div className="grid grid-cols-1 gap-2 mx-auto xl:grid-cols-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 mx-auto xl:grid-cols-4 md:grid-cols-3">
             {renderSimilarProducts}
           </div>
         </div>

@@ -18,7 +18,7 @@ const ProductsPage = () => {
   };
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
+      <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
         {[...Array(10)].map((_, idx) => (
           <MyCardSkeleton key={idx} />
         ))}
@@ -39,7 +39,7 @@ const ProductsPage = () => {
       <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-7">
         Browse Our Collection
       </h1>
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3">
         {renderProductList}
       </div>
       {visibleCount < data.products.length && (

@@ -96,13 +96,13 @@ const ProductCard = ({
         />
       </Link>
       <CardHeader>
-        <CardTitle>{truncateText(title)}</CardTitle>
+        <CardTitle>{truncateText(title, 40)}</CardTitle>
         <CardDescription className="text-slate-500">
-          {truncateText(description)}
+          {truncateText(description, 80)}
         </CardDescription>
       </CardHeader>
-      <CardFooter className="pb-6 mt-auto flex gap-2 flex-col sm:flex-row sm:gap-1">
-        <Button onClick={handleAddToCart} className="flex-1">
+      <CardFooter className="pb-6 mt-auto flex gap-2 flex-col lg:flex-row sm:gap-1 ">
+        <Button onClick={handleAddToCart} className="flex-1 w-full">
           <ShoppingCart />
           Add to cart
         </Button>
@@ -110,7 +110,7 @@ const ProductCard = ({
           <Button
             onClick={removeFromWishlist}
             variant="destructive"
-            className="flex-1"
+            className="flex-1 w-full"
           >
             {/* <Heart /> */}
             Remove
@@ -119,7 +119,7 @@ const ProductCard = ({
           <Button
             onClick={handleAddToWishlist}
             variant="destructive"
-            className="flex-1"
+            className="flex-1 w-full"
           >
             <Heart />
             Add to wishlist
