@@ -1,32 +1,17 @@
-// import { setWishlist } from "@/app/features/wihslistStoreSlice";
-// import { setWishlist } from "@/app/features/wihslistStoreSlice";
 import { useAppSelector } from "@/app/hooks";
-// import { useGetWishlistItemsQuery } from "@/app/services/WishlistSlice";
-// import { useGetWishlistItemsQuery } from "@/app/services/WishlistSlice";
-// import MyCardSkeleton from "@/components/MyCardSkeleton";
+
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { IWishlist } from "@/interfaces";
-// import CookieService from "@/services/CookieService";
-// import CookieService from "@/services/CookieService";
+
 import { useState } from "react";
 
 const WishlistPage = () => {
   const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(false);
-  // const token = CookieService.get("token");
-  // const { isLoading, data: wishlistData } = useGetWishlistItemsQuery(
-  //   undefined,
-  //   {
-  //     skip: !token,
-  //   }
-  // );
-  // console.log(wishlistData);
+
   const wishlist = useAppSelector((state) => state.wislistStore.wishlist);
-  // const dispatch = useAppDispatch();
-  // useEffect(() => {
-  //   dispatch(setWishlist(wishlistData?.wishlists as []));
-  // }, [wishlistData?.wishlists, dispatch]);
+
   // Handlers
   const handleShowMore = async () => {
     setLoading(true);
@@ -34,15 +19,6 @@ const WishlistPage = () => {
     setVisibleCount((prev) => prev + 10);
     setLoading(false);
   };
-  // if (isLoading) {
-  //   return (
-  //     <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
-  //       {[...Array(10)].map((_, idx) => (
-  //         <MyCardSkeleton key={idx} />
-  //       ))}
-  //     </div>
-  //   );
-  // }
   // Renders
   console.log(wishlist);
   const renderWishlistItems = wishlist
@@ -62,7 +38,7 @@ const WishlistPage = () => {
       <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-7">
         Browse Our Collection
       </h1>
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3">
         {renderWishlistItems}
       </div>
       {visibleCount < Array(wishlist).length && (

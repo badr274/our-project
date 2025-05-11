@@ -57,3 +57,15 @@ export const loginSchema = yup
       .min(8, "Password must be at least 8 characters"),
   })
   .required();
+
+export const checkoutFormSchema = yup.object({
+  phone: yup
+    .string()
+    .required("Phone is required")
+    .matches(/^01[0125][0-9]{8}$/, "Invalid Egyptian phone number"),
+  address: yup
+    .string()
+    .required("Address is required")
+    .min(5, "Address must be at least 5 characters")
+    .max(255, "Address must be less than 255 characters"),
+});

@@ -3,6 +3,7 @@ import { AuthApiSlice } from "./auth/AuthApiSlice";
 import { productsApiSlice } from "./services/ProductsSlice";
 import { cartApiSlice } from "./services/CartSlice";
 import { wishlistApiSlice } from "./services/WishlistSlice";
+import { orderApiSlice } from "./services/OrderSlice";
 import PersistShoppingCartReducer from "./features/ShoppingCartSlice";
 import PersistWishlistReducer from "./features/wihslistStoreSlice";
 import persistStore from "redux-persist/es/persistStore";
@@ -12,6 +13,7 @@ const store = configureStore({
     [productsApiSlice.reducerPath]: productsApiSlice.reducer,
     [cartApiSlice.reducerPath]: cartApiSlice.reducer,
     [wishlistApiSlice.reducerPath]: wishlistApiSlice.reducer,
+    [orderApiSlice.reducerPath]: orderApiSlice.reducer,
     shoppingCart: PersistShoppingCartReducer,
     wislistStore: PersistWishlistReducer,
   },
@@ -23,6 +25,7 @@ const store = configureStore({
       AuthApiSlice.middleware,
       cartApiSlice.middleware,
       wishlistApiSlice.middleware,
+      orderApiSlice.middleware,
     ]);
   },
 });

@@ -12,7 +12,7 @@ import { truncateText } from "@/lib/utils";
 import { useAddProductToCartMutation } from "@/app/services/CartSlice";
 import CookieService from "@/services/CookieService";
 import { useAuthDialog } from "@/context/AuthDialogContext";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useAppDispatch } from "@/app/hooks";
 import { setCartItems } from "@/app/features/ShoppingCartSlice";
 import {
   useAddItemToWishlistMutation,
@@ -33,7 +33,7 @@ const ProductCard = ({
   wishProductId,
 }: IProductCard) => {
   const { pathname } = useLocation();
-  const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
+  // const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
   const dispatch = useAppDispatch();
   const { authDialogOpen } = useAuthDialog();
   const { id, title, description, image } = product;
@@ -81,8 +81,7 @@ const ProductCard = ({
       const { data } = await removeItemFromWishlist({
         product_id: wishProductId as number,
       });
-      console.log(data);
-      // dispatch(setWishlist(data?.wishlists));
+      dispatch(setWishlist(data?.wishlists));
     } catch (error) {
       console.log(error);
     }
@@ -97,13 +96,13 @@ const ProductCard = ({
         />
       </Link>
       <CardHeader>
-        <CardTitle>{truncateText(title)}</CardTitle>
+        <CardTitle>{truncateText(title, 40)}</CardTitle>
         <CardDescription className="text-slate-500">
-          {truncateText(description)}
+          {truncateText(description, 80)}
         </CardDescription>
       </CardHeader>
-      <CardFooter className="pb-6 mt-auto flex gap-2 flex-col sm:flex-row sm:gap-1">
-        <Button onClick={handleAddToCart} className="flex-1">
+      <CardFooter className="pb-6 mt-auto flex gap-2 flex-col lg:flex-row sm:gap-1 ">
+        <Button onClick={handleAddToCart} className="flex-1 w-full">
           <ShoppingCart />
           Add to cart
         </Button>
@@ -111,7 +110,7 @@ const ProductCard = ({
           <Button
             onClick={removeFromWishlist}
             variant="destructive"
-            className="flex-1"
+            className="flex-1 w-full"
           >
             {/* <Heart /> */}
             Remove
@@ -120,7 +119,7 @@ const ProductCard = ({
           <Button
             onClick={handleAddToWishlist}
             variant="destructive"
-            className="flex-1"
+            className="flex-1 w-full"
           >
             <Heart />
             Add to wishlist

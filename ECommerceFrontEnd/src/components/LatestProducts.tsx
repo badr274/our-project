@@ -27,7 +27,7 @@ const LatestProducts = () => {
   });
 
   return (
-    <div className="space-y-6 px-2 my-10">
+    <div className="space-y-6 px-2 my-10 container">
       <h2 className="text-2xl md:text-3xl font-bold">Our Latest Products</h2>
       <div className="grid grid-cols-1 gap-5 container mx-auto sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 ">
         {renderProductList}
