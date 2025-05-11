@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { calcPriceAfterDiscount, calcTotalPrice } from "@/utils";
+import { calcPriceDiscount, calcTotalPrice } from "@/utils";
 import { CircleX } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ICartProduct } from "@/interfaces";
@@ -69,7 +69,7 @@ const CartPage = () => {
                       <TableCell>
                         $
                         {(
-                          calcPriceAfterDiscount(
+                          calcPriceDiscount(
                             item.product.price,
                             item.product.discount
                           ) * item.quantity

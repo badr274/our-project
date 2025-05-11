@@ -10,7 +10,10 @@ const CheckoutPage = () => {
   const [searchParams] = useSearchParams();
   const total = searchParams.get("total");
   const deliveryCost = 16.99;
-
+  const discount = 0;
+  const totalPrice = calcTotalPrice(cartItems || []);
+  const orderTotalPrice =
+    totalPrice - (totalPrice * discount) / 100 + deliveryCost;
   const navigate = useNavigate();
 
   // RENDERs

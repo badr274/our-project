@@ -3,8 +3,8 @@
 namespace App\Services\Auth;
 
 use App\Repositories\UserRepository;
+use App\Exceptions\AuthException;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 class AuthService
@@ -19,8 +19,7 @@ class AuthService
     public function register(array $data)
     {
         $user = $this->userRepository->create($data);
-        $token = $user->createToken('auth_token')->plainTextToken;
-
+        $token = $this->createUserToken($user, 'user');
         return ['token' => $token, 'user' => $user];
     }
 
@@ -29,33 +28,30 @@ class AuthService
         $user = $this->userRepository->findByEmail($data['email']);
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages(['email' => 'Email or password is incorrect']);
+            throw AuthException::invalidCredentials();
         }
 
-        if ($role == 'admin') {
-
-            if (!in_array($user->role, ['admin', 'manager'])) {
-                return response()->json(['message' => 'Access denied. Not an admin or manager'], 403);
-            }
-
-            $token = $user->createToken('admin-token')->plainTextToken;
-        } elseif ($role == 'user') {
-
-            $token = $user->createToken('auth_token')->plainTextToken;
+        if ($role === 'admin' && !in_array($user->role, ['admin', 'manager'])) {
+            throw AuthException::insufficientPermissions();
         }
 
+        $token = $this->createUserToken($user, $role);
         return ['token' => $token, 'user' => $user];
     }
 
     public function logout(Request $request)
     {
-        try {
-            if (!$request->user()) {
-                return response()->json(['message' => 'Unauthenticated'], 401);
-            }
-            $request->user()->currentAccessToken()->delete();
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        if (!$request->user()) {
+            throw AuthException::unauthenticated();
         }
+        
+        $request->user()->currentAccessToken()->delete();
+        return ['message' => 'Logged out successfully'];
+    }
+
+    private function createUserToken($user, string $role): string
+    {
+        $tokenName = $role === 'admin' ? 'admin-token' : 'auth_token';
+        return $user->createToken($tokenName)->plainTextToken;
     }
 }
