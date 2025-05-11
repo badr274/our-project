@@ -24,7 +24,7 @@ const CheckoutPage = () => {
   const { cartItems } = useAppSelector((state) => state.shoppingCart);
   const deliveryCost = 16.99;
   const discount = 0;
-  const totalPrice = calcTotalPrice(cartItems);
+  const totalPrice = calcTotalPrice(cartItems || []);
   const orderTotalPrice =
     totalPrice - (totalPrice * discount) / 100 + deliveryCost;
   const navigate = useNavigate();
@@ -56,10 +56,10 @@ const CheckoutPage = () => {
       <div key={item.id} className="flex items-center justify-between">
         <div className="space-x-2 flex items-center">
           <span className="text-gray-500 text-sm">x{item.quantity}</span>
-          <p>{item.title}</p>
+          <p>{item.product.title}</p>
         </div>
         <span className="font-medium">
-          ${(item.price * item.quantity).toFixed(2)}
+          ${(item.product.price * item.quantity).toFixed(2)}
         </span>
       </div>
     );

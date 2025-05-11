@@ -2,18 +2,22 @@
 
 namespace App\Services\Order;
 
+use App\DTOs\OrderData;
 use App\Repositories\OrderRepository;
 use App\Repositories\CartRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Order;
 
 class OrderService
 {
     protected OrderRepository $orderRepo;
     protected CartRepository $cartRepo;
 
-    public function __construct(OrderRepository $orderRepo, CartRepository $cartRepo)
-    {
+    public function __construct(
+        OrderRepository $orderRepo,
+        CartRepository $cartRepo
+    ) {
         $this->orderRepo = $orderRepo;
         $this->cartRepo = $cartRepo;
     }
@@ -28,17 +32,24 @@ class OrderService
         return $this->orderRepo->getOrders($userId);
     }
 
-    public function createOrder(array $data)
+    public function createOrder(OrderData $orderData): Order
     {
-        return DB::transaction(function () use ($data) {
-            $userId = Auth::id();
-            $cartItems = $this->validateAndGetCartItems($userId);
-            $orderData = $this->prepareOrderData($cartItems, $data);
-            $order = $this->createOrderRecord($orderData);
-            $this->attachProductsToOrder($order, $orderData['productData']);
-            $this->cartRepo->clearCart($userId);
-            return $this->orderRepo->getOrders($userId);
-        });
+        return $this->orderRepo->create($orderData->toArray());
+    }
+
+    public function updateOrder(Order $order, OrderData $orderData): Order
+    {
+        return $this->orderRepo->update($order, $orderData->toArray());
+    }
+
+    public function getOrder(int $id): ?Order
+    {
+        return $this->orderRepo->find($id);
+    }
+
+    public function getUserOrders(int $userId): array
+    {
+        return $this->orderRepo->findByUserId($userId);
     }
 
     private function validateAndGetCartItems(int $userId)
@@ -91,29 +102,6 @@ class OrderService
     private function attachProductsToOrder($order, array $productData): void
     {
         $order->products()->attach($productData);
-    }
-
-    public function getOrder(int $orderId)
-    {
-        $order = $this->orderRepo->getOrder($orderId);
-
-        $order->load('products');
-
-        return [
-            'id' => $order->id,
-            'total_price' => $order->total_price,
-            'address' => $order->address,
-            'phone' => $order->phone,
-            'status' => $order->status,
-            'products' => $order->products->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'quantity' => $product->pivot->quantity,
-                    'price_at_order' => $product->pivot->price_at_order,
-                ];
-            }),
-        ];
     }
 
     public function updateOrderStatus($order, int $status)

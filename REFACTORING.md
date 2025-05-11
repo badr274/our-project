@@ -1,36 +1,14 @@
 # Refactoring Documentation
 
 ## Refactoring Summary
-Total Refactoring Instances: 20
-- Frontend: 10 code smells
+Total Refactoring Instances: 10
 - Backend: 10 code smells
-
-### Frontend Refactoring Count
-- CartPage Component: 5 code smells
-- Product Management: 5 code smells
 
 ### Backend Refactoring Count
 - Authentication Service: 5 code smells
 - Product Service: 5 code smells
 
 ## Files Changed/Created
-
-### Frontend Files
-#### Modified
-- `ECommerceFrontEnd/src/pages/CartPage.tsx`
-  - Extracted cart logic to custom hook
-  - Improved type safety
-  - Enhanced UI components
-
-- `ECommerceFrontEnd/src/interfaces/index.ts`
-  - Updated ICartProduct interface
-  - Added new type definitions
-
-#### Created
-- `ECommerceFrontEnd/src/hooks/useCart.ts`
-  - New custom hook for cart logic
-  - Centralized cart state management
-  - Improved reusability
 
 ### Backend Files
 #### Modified
@@ -61,7 +39,7 @@ DTO (Data Transfer Object) is a design pattern used to transfer data between dif
    - Reduces the number of method calls
 
 2. **Type Safety**
-   - Enforces data structure through TypeScript/PHP types
+   - Enforces data structure through PHP types
    - Prevents runtime errors from incorrect data shapes
    - Makes refactoring safer and easier
 
@@ -71,26 +49,7 @@ DTO (Data Transfer Object) is a design pattern used to transfer data between dif
    - Reduces duplicate validation code
 
 ### Example from Our Code
-```typescript
-// Frontend DTO
-export class ProductData {
-  constructor(
-    public readonly title: string,
-    public readonly price: number,
-    public readonly description: string,
-    public readonly image?: File
-  ) {}
-
-  toArray(): Record<string, any> {
-    return {
-      title: this.title,
-      price: this.price,
-      description: this.description,
-      image: this.image
-    };
-  }
-}
-
+```php
 // Backend DTO
 class ProductData
 {
@@ -125,202 +84,18 @@ class ProductData
    - Prevents invalid data from reaching services
 
 3. **Enhanced Type Safety**
-   - Frontend: TypeScript interfaces ensure correct data shape
-   - Backend: PHP type hints prevent type-related errors
-   - Both: Better IDE support and autocompletion
+   - PHP type hints prevent type-related errors
+   - Better IDE support and autocompletion
+   - Clearer code intent
 
 4. **Reduced Duplication**
    - Single source of truth for data structure
    - Reusable validation logic
    - Consistent data handling across the application
 
-## Frontend Refactoring
-
-### CartPage Component
-1. **Component Structure**
-   - Extracted cart logic into a custom `useCart` hook
-   - Improved separation of concerns
-   - Removed direct Redux state management from component
-
-2. **Type Safety Improvements**
-   - Fixed property access for `ICartProduct` interface
-   - Corrected nested object access (`item.product.title`, `item.product.price`)
-   - Updated `QuantitySelector` props to match interface requirements
-
-3. **UI Enhancements**
-   - Added product image display in cart items
-   - Improved layout with flex container for product information
-   - Added proper styling for images (rounded corners, object-fit)
-
-4. **Code Cleanup**
-   - Removed unused `TableCaption` import
-   - Simplified price calculations
-   - Improved code organization and readability
-
-#### Code Smells Identified
-1. **Large Class/Component**
-   - Component handling too many responsibilities
-   - Excessive calculations and state management
-   - Complex nested logic
-
-2. **Feature Envy**
-   - Component directly manipulating Redux state
-   - Business logic mixed with presentation
-
-3. **Primitive Obsession**
-   - Direct manipulation of raw data structures
-   - Lack of proper type safety with ICartProduct interface
-
-4. **Shotgun Surgery**
-   - Changes to cart logic require modifications in multiple places
-   - State management scattered across component
-
-5. **Duplicate Code**
-   - Price calculations repeated across components
-   - Similar UI patterns not extracted into reusable components
-   - Redundant state management logic
-
-#### Before Refactoring
-```typescript
-// CartPage.tsx
-const CartPage = () => {
-  const cartItems = useAppSelector((state) => state.cart.items);
-  const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-  const estimateShipping = totalPrice > 100 ? 0 : 10;
-
-  const handleRemoveFromCart = (id: number) => {
-    dispatch(removeFromCart(id));
-  };
-
-  return (
-    // ... complex JSX with direct state access
-    <TableCell>{item.title}</TableCell>
-    <TableCell>${item.price}</TableCell>
-    <TableCell>
-      <QuantitySelector product={item} />
-    </TableCell>
-  );
-};
-```
-
-#### After Refactoring
-```typescript
-// CartPage.tsx
-const CartPage = () => {
-  const { cartItems, totalPrice, estimateShipping, handleRemoveFromCart } = useCart();
-  
-  return (
-    // ... cleaner JSX with proper type safety
-    <TableCell>
-      <div className="flex items-center gap-2">
-        <img
-          src={item.product.image}
-          alt={item.product.title}
-          className="w-16 h-16 object-cover rounded"
-        />
-        <span>{item.product.title}</span>
-      </div>
-    </TableCell>
-    <TableCell>${item.product.price}</TableCell>
-    <TableCell>
-      <QuantitySelector initialQuantity={item.quantity} id={item.id} />
-    </TableCell>
-  );
-};
-```
-
-### Product Management
-1. **Data Structure**
-   - Implemented `ProductData` DTO for better data handling
-   - Improved type safety in product-related components
-   - Enhanced data validation and transformation
-
-2. **State Management**
-   - Centralized product state management
-   - Improved error handling for product operations
-   - Enhanced loading states and user feedback
-
-#### Code Smells Identified
-1. **Data Class**
-   - Lack of encapsulation
-   - Direct state manipulation
-   - Missing validation logic
-
-2. **Primitive Obsession**
-   - Using raw types instead of proper domain objects
-   - Inconsistent data handling
-
-3. **Temporary Field**
-   - Inconsistent state management
-   - Missing validation
-
-4. **Feature Envy**
-   - Business logic mixed with UI components
-   - Direct state manipulation in components
-
-5. **Inappropriate Intimacy**
-   - Components directly accessing and modifying each other's state
-   - Tight coupling between product and cart components
-   - Direct manipulation of shared state
-
-#### Before Refactoring
-```typescript
-// ProductService.ts
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  // ... other properties
-}
-
-const createProduct = (data: any) => {
-  // Direct state manipulation
-  return dispatch(createProductAction(data));
-};
-```
-
-#### After Refactoring
-```typescript
-// ProductData.ts
-export class ProductData {
-  constructor(
-    public readonly title: string,
-    public readonly price: number,
-    public readonly description: string,
-    public readonly image?: File
-  ) {}
-
-  toArray(): Record<string, any> {
-    return {
-      title: this.title,
-      price: this.price,
-      description: this.description,
-      image: this.image
-    };
-  }
-}
-
-// ProductService.ts
-const createProduct = (data: ProductData) => {
-  return dispatch(createProductAction(data.toArray()));
-};
-```
-
 ## Backend Refactoring
 
 ### Authentication Service
-1. **Error Handling**
-   - Created custom `AuthException` class
-   - Standardized authentication error responses
-   - Improved error message clarity and consistency
-
-2. **Code Organization**
-   - Separated authentication logic into dedicated service
-   - Enhanced security practices
-   - Improved token management
 
 #### Code Smells Identified
 1. **Error Code**
@@ -394,15 +169,6 @@ public function login($credentials)
 ```
 
 ### Product Service
-1. **Data Transfer Objects**
-   - Implemented `ProductData` DTO
-   - Enhanced data validation
-   - Improved image handling logic
-
-2. **Service Layer**
-   - Better separation of concerns
-   - Improved error handling
-   - Enhanced maintainability
 
 #### Code Smells Identified
 1. **Data Class**
@@ -488,52 +254,234 @@ public function createProduct(Request $request)
 }
 ```
 
-## Files Modified
-### Frontend
-- `ECommerceFrontEnd/src/pages/CartPage.tsx`
-- `ECommerceFrontEnd/src/hooks/useCart.ts`
-- `ECommerceFrontEnd/src/interfaces/index.ts`
-- `ECommerceFrontEnd/src/components/QuantitySelector.tsx`
+### Order Service
 
-### Backend
-- `ECommerceBackEnd/app/Services/Product/ProductService.php`
-- `ECommerceBackEnd/app/Exceptions/AuthException.php`
-- `ECommerceBackEnd/app/DTOs/ProductData.php`
+#### Code Smells Identified
+1. **God Object**
+   - Service handling too many responsibilities
+   - Complex order processing logic
+   - Mixed concerns between order and payment
 
-## Dependencies
-### Frontend
-- React Router DOM (for navigation)
-- Lucide React (for icons)
-- Custom UI components (Button, Table components)
-- Custom hooks (useCart)
-- Redux Toolkit (state management)
+2. **Primitive Obsession**
+   - Using raw arrays for order items
+   - Lack of proper order status enums
+   - Inconsistent date handling
 
-### Backend
-- Laravel Framework
-- PHP 8.x
-- Custom DTOs and Exceptions
+3. **Feature Envy**
+   - Payment logic mixed with order processing
+   - Shipping calculations scattered
+   - Tax calculations duplicated
 
-## Future Improvements
-1. **Frontend**
-   - Add loading states for cart operations
-   - Implement error handling for failed cart operations
-   - Add animations for cart item removal
-   - Consider implementing cart persistence
-   - Add unit tests for the useCart hook
-   - Implement comprehensive error boundaries
-   - Add performance monitoring
+4. **Temporary Field**
+   - Inconsistent order state management
+   - Missing validation steps
+   - Unclear order lifecycle
 
-2. **Backend**
-   - Implement comprehensive logging system
-   - Add request validation middleware
-   - Enhance API documentation
-   - Implement rate limiting
-   - Add caching layer for frequently accessed data
-   - Implement comprehensive test suite
+5. **Speculative Generality**
+   - Over-engineered payment processing
+   - Unnecessary abstraction layers
+   - Complex solutions for simple problems
 
-3. **General**
-   - Add CI/CD pipeline
-   - Implement automated testing
-   - Add performance monitoring
-   - Enhance security measures
-   - Implement comprehensive documentation 
+#### Before Refactoring
+```php
+// OrderService.php
+class OrderService
+{
+    public function createOrder($userId, $items, $shippingAddress)
+    {
+        $order = [
+            'user_id' => $userId,
+            'items' => $items,
+            'shipping_address' => $shippingAddress,
+            'status' => 'pending',
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Calculate totals
+        $subtotal = 0;
+        foreach ($items as $item) {
+            $subtotal += $item['price'] * $item['quantity'];
+        }
+        $tax = $subtotal * 0.1;
+        $shipping = $this->calculateShipping($shippingAddress);
+        $total = $subtotal + $tax + $shipping;
+
+        $order['subtotal'] = $subtotal;
+        $order['tax'] = $tax;
+        $order['shipping'] = $shipping;
+        $order['total'] = $total;
+
+        return $this->orderRepo->create($order);
+    }
+}
+```
+
+#### After Refactoring
+```php
+// OrderData.php
+class OrderData
+{
+    public function __construct(
+        public readonly int $userId,
+        public readonly array $items,
+        public readonly AddressData $shippingAddress,
+        public readonly OrderStatus $status = OrderStatus::PENDING,
+        public readonly ?DateTime $createdAt = null
+    ) {
+        $this->createdAt = $createdAt ?? new DateTime();
+    }
+
+    public function calculateTotals(): OrderTotals
+    {
+        $subtotal = array_reduce($this->items, fn($sum, $item) => 
+            $sum + ($item->price * $item->quantity), 0);
+        
+        return new OrderTotals(
+            subtotal: $subtotal,
+            tax: $subtotal * 0.1,
+            shipping: ShippingCalculator::calculate($this->shippingAddress),
+            total: $subtotal + ($subtotal * 0.1) + ShippingCalculator::calculate($this->shippingAddress)
+        );
+    }
+}
+
+// OrderService.php
+class OrderService
+{
+    public function createOrder(OrderData $orderData): Order
+    {
+        $totals = $orderData->calculateTotals();
+        return $this->orderRepo->create([
+            'user_id' => $orderData->userId,
+            'items' => $orderData->items,
+            'shipping_address' => $orderData->shippingAddress->toArray(),
+            'status' => $orderData->status->value,
+            'created_at' => $orderData->createdAt->format('Y-m-d H:i:s'),
+            'subtotal' => $totals->subtotal,
+            'tax' => $totals->tax,
+            'shipping' => $totals->shipping,
+            'total' => $totals->total
+        ]);
+    }
+}
+```
+
+### Payment Service
+
+#### Code Smells Identified
+1. **Feature Envy**
+   - Payment validation mixed with processing
+   - Currency conversion scattered
+   - Transaction logging mixed with business logic
+
+2. **Primitive Obsession**
+   - Raw payment status strings
+   - Inconsistent currency handling
+   - Missing payment type enums
+
+3. **Temporary Field**
+   - Inconsistent transaction state
+   - Missing validation steps
+   - Unclear payment lifecycle
+
+4. **Shotgun Surgery**
+   - Payment logic scattered across services
+   - Changes require modifications in multiple places
+   - Duplicate validation code
+
+5. **Middle Man**
+   - Unnecessary payment gateway abstraction
+   - Extra layers of delegation
+   - Redundant method calls
+
+#### Before Refactoring
+```php
+// PaymentService.php
+class PaymentService
+{
+    public function processPayment($orderId, $amount, $currency, $paymentMethod)
+    {
+        $payment = [
+            'order_id' => $orderId,
+            'amount' => $amount,
+            'currency' => $currency,
+            'payment_method' => $paymentMethod,
+            'status' => 'pending'
+        ];
+
+        try {
+            $gateway = $this->getPaymentGateway($paymentMethod);
+            $result = $gateway->process($amount, $currency);
+            
+            if ($result['success']) {
+                $payment['status'] = 'completed';
+                $payment['transaction_id'] = $result['transaction_id'];
+            } else {
+                $payment['status'] = 'failed';
+                $payment['error'] = $result['error'];
+            }
+        } catch (Exception $e) {
+            $payment['status'] = 'failed';
+            $payment['error'] = $e->getMessage();
+        }
+
+        return $this->paymentRepo->create($payment);
+    }
+}
+```
+
+#### After Refactoring
+```php
+// PaymentData.php
+class PaymentData
+{
+    public function __construct(
+        public readonly int $orderId,
+        public readonly Money $amount,
+        public readonly PaymentMethod $method,
+        public readonly PaymentStatus $status = PaymentStatus::PENDING,
+        public readonly ?string $transactionId = null,
+        public readonly ?string $error = null
+    ) {}
+
+    public static function fromRequest(Request $request): self
+    {
+        return new self(
+            orderId: $request->input('order_id'),
+            amount: new Money(
+                $request->input('amount'),
+                $request->input('currency', 'USD')
+            ),
+            method: PaymentMethod::from($request->input('payment_method'))
+        );
+    }
+}
+
+// PaymentService.php
+class PaymentService
+{
+    public function processPayment(PaymentData $paymentData): Payment
+    {
+        try {
+            $gateway = PaymentGatewayFactory::create($paymentData->method);
+            $result = $gateway->process($paymentData->amount);
+            
+            return $this->paymentRepo->create(
+                $paymentData->withStatus(
+                    $result->isSuccessful() 
+                        ? PaymentStatus::COMPLETED 
+                        : PaymentStatus::FAILED
+                )->withTransactionId($result->getTransactionId())
+                 ->withError($result->getError())
+                 ->toArray()
+            );
+        } catch (PaymentException $e) {
+            return $this->paymentRepo->create(
+                $paymentData->withStatus(PaymentStatus::FAILED)
+                           ->withError($e->getMessage())
+                           ->toArray()
+            );
+        }
+    }
+}
+``` 
