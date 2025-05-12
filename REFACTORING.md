@@ -40,28 +40,21 @@
 
 ```php
 // PaymentService.php
-const DEFAULT_CURRENCY = 'usd';
+    const DEFAULT_CURRENCY = 'usd';
     const SUPPORTED_METHODS = ['card'];
 
     public function createPaymentIntent(array $data)
     {
-        try {
-            $this->initializeStripe();
+        $this->initializeStripe();
 
-            $paymentIntent = PaymentIntent::create(
-                $this->buildPaymentIntentPayload($data['amount'])
-            );
+        $paymentIntent = PaymentIntent::create(
+            $this->buildPaymentIntentPayload($data['amount'])
+        );
 
-            return [
-                'clientSecret' => $paymentIntent->client_secret,
-                'user' => auth()->user(),
-            ];
-
-        } catch (\Exception $e) {
-            return [
-                'error' => $e->getMessage(),
-            ];
-        }
+        return [
+            'clientSecret' => $paymentIntent->client_secret,
+            'user' => auth()->user(),
+        ];
     }
 
     private function initializeStripe(): void

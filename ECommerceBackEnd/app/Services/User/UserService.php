@@ -39,7 +39,7 @@ class UserService
 
     public function deleteUser(User $user)
     {
-        $this->deleteImage($user->image, 'users');
+        $this->deleteImage($user->image);
         return $this->userRepository->delete($user);
     }
 }

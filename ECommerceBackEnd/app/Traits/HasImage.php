@@ -13,12 +13,12 @@ trait HasImage
             return null;
         }
 
-        $this->deleteImage($oldImage, $folder);
+        $this->deleteImage($oldImage);
 
         return $request->file('image')->store($folder, 'public');
     }
 
-    public function deleteImage(?string $img, string $folder = 'uploads'): void
+    public function deleteImage(?string $img): void
     {
         if ($img && Storage::disk('public')->exists($img)) {
             Storage::disk('public')->delete($img);
