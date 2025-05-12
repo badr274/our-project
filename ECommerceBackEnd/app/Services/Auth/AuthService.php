@@ -44,14 +44,16 @@ class AuthService
         if (!$request->user()) {
             throw AuthException::unauthenticated();
         }
-        
         $request->user()->currentAccessToken()->delete();
         return ['message' => 'Logged out successfully'];
     }
 
     private function createUserToken($user, string $role): string
     {
-        $tokenName = $role === 'admin' ? 'admin-token' : 'auth_token';
+        $tokenName = match ($role) {
+            'admin', 'manager' => 'admin-token',
+            default => 'auth_token'
+        };
         return $user->createToken($tokenName)->plainTextToken;
     }
 }
