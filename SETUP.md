@@ -7,6 +7,7 @@ This guide will walk you through setting up both the frontend and backend of the
 Before you begin, ensure you have the following installed:
 
 1. **Node.js and npm**
+
    - Download from: https://nodejs.org/
    - Recommended version: 16.x or higher
    - Verify installation:
@@ -16,6 +17,7 @@ Before you begin, ensure you have the following installed:
      ```
 
 2. **PHP and Composer**
+
    - PHP 8.1 or higher
    - Composer (PHP package manager)
    - Download from: https://getcomposer.org/
@@ -38,22 +40,26 @@ Before you begin, ensure you have the following installed:
 ## Backend Setup (Laravel)
 
 1. **Clone the repository and navigate to backend**
+
    ```bash
    cd ECommerceBackEnd
    ```
 
 2. **Install PHP dependencies**
+
    ```bash
    composer install
    ```
 
 3. **Environment Setup**
+
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
 4. **Configure Database**
+
    - Open `.env` file
    - Update database credentials:
      ```
@@ -66,14 +72,15 @@ Before you begin, ensure you have the following installed:
      ```
 
 5. **Create Database**
+
    ```sql
    CREATE DATABASE laravel;
    ```
 
 6. **Run Migrations and Seeders**
+
    ```bash
-   php artisan migrate
-   php artisan db:seed
+   php artisan migrate:fresh --seed
    ```
 
 7. **Start Laravel Development Server**
@@ -85,11 +92,13 @@ Before you begin, ensure you have the following installed:
 ## Frontend Setup (Vue.js)
 
 1. **Navigate to frontend directory**
+
    ```bash
    cd ECommerceFrontEnd
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    # or
@@ -97,10 +106,11 @@ Before you begin, ensure you have the following installed:
    ```
 
 3. **Environment Setup**
+
    - Create `.env` file in the frontend directory
    - Add the following:
      ```
-     VITE_API_URL=http://localhost:8000
+     VITE_API_URL=http://localhost:8000/api
      ```
 
 4. **Start Development Server**
@@ -114,6 +124,7 @@ Before you begin, ensure you have the following installed:
 ## Verifying the Setup
 
 1. **Backend Verification**
+
    - Visit http://localhost:8000
    - You should see the Laravel welcome page
    - Check API endpoints at http://localhost:8000/api/documentation (if enabled)
@@ -128,6 +139,7 @@ Before you begin, ensure you have the following installed:
 ## Common Issues and Solutions
 
 1. **Port Conflicts**
+
    - If port 8000 is in use:
      ```bash
      php artisan serve --port=8001
@@ -138,11 +150,13 @@ Before you begin, ensure you have the following installed:
      ```
 
 2. **Database Connection Issues**
+
    - Verify database credentials in `.env`
    - Ensure database server is running
    - Check database user permissions
 
 3. **Node Modules Issues**
+
    - If you encounter node module errors:
      ```bash
      rm -rf node_modules
@@ -159,11 +173,13 @@ Before you begin, ensure you have the following installed:
 ## Development Workflow
 
 1. **Running Both Servers**
+
    - Keep both terminal windows open
    - Backend: `php artisan serve`
    - Frontend: `npm run dev`
 
 2. **Making Changes**
+
    - Backend changes will auto-reload
    - Frontend changes will hot-reload
    - Both servers can run simultaneously
@@ -176,4 +192,4 @@ Before you begin, ensure you have the following installed:
 ## Additional Resources
 
 - [Laravel Documentation](https://laravel.com/docs)
-- [Vite Documentation](https://vitejs.dev/guide/) 
+- [Vite Documentation](https://vitejs.dev/guide/)
