@@ -39,7 +39,7 @@ class HasImageTest extends TestCase
         $file = UploadedFile::fake()->image('delete-me.jpg');
         $path = $file->store('test-uploads', 'public');
 
-        $this->deleteImage($path, 'test-uploads');
+        $this->deleteImage($path);
 
         $this->assertFalse(Storage::disk('public')->exists($path));
     }
