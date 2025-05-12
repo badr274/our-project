@@ -17,7 +17,10 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 type FormValues = yup.InferType<typeof checkoutFormSchema>;
-const CheckoutForm = () => {
+interface ICheckoutForm {
+  amount: number;
+}
+const CheckoutForm = ({ amount }: ICheckoutForm) => {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState("");
@@ -54,7 +57,7 @@ const CheckoutForm = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ amount: 100 }),
+          body: JSON.stringify({ amount: amount * 100 }),
         }
       );
 

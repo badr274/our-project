@@ -36,7 +36,7 @@ const WishlistPage = () => {
   return (
     <div className="mt-12 px-2 container mx-auto">
       <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-7">
-        Browse Our Collection
+        Browse Your Wishlist
       </h1>
       <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3">
         {renderWishlistItems}

@@ -10,10 +10,7 @@ const CheckoutPage = () => {
   const [searchParams] = useSearchParams();
   const total = searchParams.get("total");
   const deliveryCost = 16.99;
-  const discount = 0;
-  const totalPrice = calcTotalPrice(cartItems || []);
-  const orderTotalPrice =
-    totalPrice - (totalPrice * discount) / 100 + deliveryCost;
+
   const navigate = useNavigate();
 
   // RENDERs
@@ -58,7 +55,7 @@ const CheckoutPage = () => {
             <ArrowLeft size={"16px"} />
             <span>Back</span>
           </div>
-          <CheckoutForm />
+          <CheckoutForm amount={+total!} />
         </div>
         <div className="flex-1 lg:flex-1/3 space-y-3 shadow-lg p-3 border rounded-md">
           <h4 className="text-lg font-semibold mb-4">Order Summary</h4>
