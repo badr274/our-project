@@ -41,7 +41,7 @@ class ProductService extends InventoryService
 
     public function deleteProduct(Product $product)
     {
-        $this->deleteImage($product->image, 'products');
+        $this->deleteImage($product->image);
         $this->productRepo->delete($product);
     }
 

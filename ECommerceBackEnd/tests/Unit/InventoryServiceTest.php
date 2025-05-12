@@ -16,6 +16,7 @@ class InventoryServiceTest extends TestCase
     protected $inventoryService;
     protected $product;
     protected $category;
+    protected $quantity;
 
     public function setUp(): void
     {
@@ -29,14 +30,13 @@ class InventoryServiceTest extends TestCase
             'price' => 100,
             'category_id' => $this->category->id
         ]);
+        $this->quantity = 5;
     }
 
 
     public function testCheckStock()
     {
-        $quantity = 5;
-
-        $this->inventoryService->checkStock($this->product->id, $quantity);
+        $this->inventoryService->checkStock($this->product->id, $this->quantity);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Not enough stock');
@@ -45,21 +45,17 @@ class InventoryServiceTest extends TestCase
 
     public function testDecrementStock()
     {
-        $quantity = 5;
-
-        $this->inventoryService->decrementStock($this->product->id, $quantity);
+        $this->inventoryService->decrementStock($this->product->id, $this->quantity);
 
         $this->product->refresh();
-        $this->assertEquals(5, $this->product->stock);
+        $this->assertEquals($this->product->stock - $this->quantity, $this->product->stock);
     }
 
     public function testIncrementStock()
     {
-        $quantity = 5;
-
-        $this->inventoryService->incrementStock($this->product->id, $quantity);
+        $this->inventoryService->incrementStock($this->product->id, $this->quantity);
 
         $this->product->refresh();
-        $this->assertEquals(15, $this->product->stock);
+        $this->assertEquals($this->product->stock + $this->quantity, $this->product->stock);
     }
 }
