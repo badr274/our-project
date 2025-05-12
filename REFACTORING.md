@@ -1,487 +1,479 @@
 # Refactoring Documentation
 
-## Refactoring Summary
-Total Refactoring Instances: 10
-- Backend: 10 code smells
-
-### Backend Refactoring Count
-- Authentication Service: 5 code smells
-- Product Service: 5 code smells
-
-## Files Changed/Created
-
-### Backend Files
-#### Modified
-- `ECommerceBackEnd/app/Services/Product/ProductService.php`
-  - Implemented DTO pattern
-  - Enhanced image handling
-  - Improved error handling
-
-#### Created
-- `ECommerceBackEnd/app/Exceptions/AuthException.php`
-  - New custom exception class
-  - Standardized error handling
-  - Improved error messages
-
-- `ECommerceBackEnd/app/DTOs/ProductData.php`
-  - New DTO for product data
-  - Enhanced data validation
-  - Improved type safety
-
-## What is DTO?
-
-DTO (Data Transfer Object) is a design pattern used to transfer data between different layers of an application. In our refactoring, we implemented DTOs to solve several problems:
-
-### Purpose of DTOs
-1. **Data Encapsulation**
-   - Bundles related data into a single object
-   - Provides a clear structure for data transfer
-   - Reduces the number of method calls
-
-2. **Type Safety**
-   - Enforces data structure through PHP types
-   - Prevents runtime errors from incorrect data shapes
-   - Makes refactoring safer and easier
-
-3. **Validation**
-   - Centralizes data validation logic
-   - Ensures data integrity before processing
-   - Reduces duplicate validation code
-
-### Example from Our Code
-```php
-// Backend DTO
-class ProductData
-{
-    public function __construct(
-        public readonly string $title,
-        public readonly float $price,
-        public readonly string $description,
-        public readonly ?UploadedFile $image = null
-    ) {}
-
-    public static function fromRequest(Request $request): self
-    {
-        return new self(
-            $request->input('title'),
-            $request->input('price'),
-            $request->input('description'),
-            $request->file('image')
-        );
-    }
-}
-```
-
-### Benefits in Our Project
-1. **Improved Code Organization**
-   - Separates data structure from business logic
-   - Makes code more maintainable
-   - Reduces complexity in services
-
-2. **Better Error Handling**
-   - Validates data at the DTO level
-   - Provides clear error messages
-   - Prevents invalid data from reaching services
-
-3. **Enhanced Type Safety**
-   - PHP type hints prevent type-related errors
-   - Better IDE support and autocompletion
-   - Clearer code intent
-
-4. **Reduced Duplication**
-   - Single source of truth for data structure
-   - Reusable validation logic
-   - Consistent data handling across the application
-
 ## Backend Refactoring
 
-### Authentication Service
+### Payment Service
 
 #### Code Smells Identified
-1. **Error Code**
-   - Inconsistent error handling
-   - Generic exception usage
-   - Lack of standardized error responses
 
-2. **Shotgun Surgery**
-   - Authentication logic scattered across codebase
-   - Changes require modifications in multiple places
-
-3. **Message Chains**
-   - Long chains of method calls for authentication
-   - Complex validation logic
-
-4. **Temporary Field**
-   - Inconsistent state management in authentication flow
-   - Missing validation steps
-
-5. **Middle Man**
-   - Unnecessary delegation of authentication logic
-   - Extra layers of abstraction without value
-   - Redundant method calls
+- **Long Method**
 
 #### Before Refactoring
+
 ```php
-// AuthService.php
-public function login($credentials)
-{
-    if (!$user = $this->validateCredentials($credentials)) {
-        throw new \Exception('Invalid credentials');
-    }
-    
-    if (!$user->hasPermission('login')) {
-        throw new \Exception('Insufficient permissions');
-    }
-    
-    return $this->generateToken($user);
-}
-```
-
-#### After Refactoring
-```php
-// AuthException.php
-class AuthException extends Exception
-{
-    public static function invalidCredentials(): self
+// PaymentService.php
+    public function createPaymentIntent(array $data)
     {
-        return new self('Invalid credentials provided');
-    }
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 
-    public static function insufficientPermissions(): self
-    {
-        return new self('User does not have required permissions');
-    }
-}
+        $currency = 'usd';
+        try {
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $data['amount'] * 100,
+                'currency' => $currency,
+                'payment_method_types' => ['card'],
+            ]);
 
-// AuthService.php
-public function login($credentials)
-{
-    if (!$user = $this->validateCredentials($credentials)) {
-        throw AuthException::invalidCredentials();
-    }
-    
-    if (!$user->hasPermission('login')) {
-        throw AuthException::insufficientPermissions();
-    }
-    
-    return $this->generateToken($user);
-}
-```
-
-### Product Service
-
-#### Code Smells Identified
-1. **Data Class**
-   - Lack of proper data encapsulation
-   - Direct request data manipulation
-   - Missing validation
-
-2. **Feature Envy**
-   - Image handling logic scattered across codebase
-   - Business logic mixed with data handling
-
-3. **Primitive Obsession**
-   - Using raw request data instead of proper DTOs
-   - Inconsistent data validation
-
-4. **Shotgun Surgery**
-   - Changes to product handling require modifications in multiple places
-   - Scattered image handling logic
-
-5. **Speculative Generality**
-   - Over-engineered image handling
-   - Unnecessary abstraction layers
-   - Complex solutions for simple problems
-
-#### Before Refactoring
-```php
-// ProductService.php
-public function createProduct(Request $request)
-{
-    $data = $request->all();
-    
-    if ($request->hasFile('image')) {
-        $data['image'] = $request->file('image')->store('products');
-    }
-    
-    return $this->productRepo->create($data);
-}
-```
-
-#### After Refactoring
-```php
-// ProductData.php
-class ProductData
-{
-    public function __construct(
-        public readonly string $title,
-        public readonly float $price,
-        public readonly string $description,
-        public readonly ?UploadedFile $image = null
-    ) {}
-
-    public static function fromRequest(Request $request): self
-    {
-        return new self(
-            $request->input('title'),
-            $request->input('price'),
-            $request->input('description'),
-            $request->file('image')
-        );
-    }
-
-    public function toArray(): array
-    {
-        $data = [
-            'title' => $this->title,
-            'price' => $this->price,
-            'description' => $this->description,
-        ];
-
-        if ($this->image) {
-            $data['image'] = $this->image->store('products');
+            return [
+                'clientSecret' => $paymentIntent->client_secret,
+                'user' => auth()->user()
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+            ];
         }
-
-        return $data;
     }
-}
+```
 
-// ProductService.php
-public function createProduct(Request $request)
-{
-    $productData = ProductData::fromRequest($request);
-    return $this->productRepo->create($productData->toArray());
-}
+#### After Refactoring
+
+```php
+// PaymentService.php
+const DEFAULT_CURRENCY = 'usd';
+    const SUPPORTED_METHODS = ['card'];
+
+    public function createPaymentIntent(array $data)
+    {
+        try {
+            $this->initializeStripe();
+
+            $paymentIntent = PaymentIntent::create(
+                $this->buildPaymentIntentPayload($data['amount'])
+            );
+
+            return [
+                'clientSecret' => $paymentIntent->client_secret,
+                'user' => auth()->user(),
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    private function initializeStripe(): void
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+    }
+
+    private function buildPaymentIntentPayload(float $amount): array
+    {
+        return [
+            'amount' => intval($amount * 100),
+            'currency' => self::DEFAULT_CURRENCY,
+            'payment_method_types' => self::SUPPORTED_METHODS,
+        ];
+    }
 ```
 
 ### Order Service
 
 #### Code Smells Identified
-1. **God Object**
-   - Service handling too many responsibilities
-   - Complex order processing logic
-   - Mixed concerns between order and payment
 
-2. **Primitive Obsession**
-   - Using raw arrays for order items
-   - Lack of proper order status enums
-   - Inconsistent date handling
-
-3. **Feature Envy**
-   - Payment logic mixed with order processing
-   - Shipping calculations scattered
-   - Tax calculations duplicated
-
-4. **Temporary Field**
-   - Inconsistent order state management
-   - Missing validation steps
-   - Unclear order lifecycle
-
-5. **Speculative Generality**
-   - Over-engineered payment processing
-   - Unnecessary abstraction layers
-   - Complex solutions for simple problems
+- **Long Method**
 
 #### Before Refactoring
+
 ```php
 // OrderService.php
-class OrderService
-{
-    public function createOrder($userId, $items, $shippingAddress)
+    public function createOrder(array $data)
     {
-        $order = [
-            'user_id' => $userId,
-            'items' => $items,
-            'shipping_address' => $shippingAddress,
-            'status' => 'pending',
-            'created_at' => date('Y-m-d H:i:s')
-        ];
+        return DB::transaction(function () use ($data) {
+            $userId = Auth::id();
+            $cartItems = $this->cartRepo->getCartByUserId($userId);
 
-        // Calculate totals
-        $subtotal = 0;
-        foreach ($items as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
-        }
-        $tax = $subtotal * 0.1;
-        $shipping = $this->calculateShipping($shippingAddress);
-        $total = $subtotal + $tax + $shipping;
+            if ($cartItems->isEmpty()) {
+                throw new \Exception("Cart is empty");
+            }
 
-        $order['subtotal'] = $subtotal;
-        $order['tax'] = $tax;
-        $order['shipping'] = $shipping;
-        $order['total'] = $total;
+            $productData = [];
+            $totalPrice = 0;
 
-        return $this->orderRepo->create($order);
+            foreach ($cartItems as $item) {
+                $price = $item->product->price - ($item->product->price * $item->product->discount / 100);
+                $productData[$item->product_id] = [
+                    'quantity'        => $item->quantity,
+                    'price_at_order'  => $price,
+                ];
+                $totalPrice += $item->quantity * $price;
+            }
+
+            $order = $this->orderRepo->createOrder([
+                'user_id'     => $userId,
+                'total_price' => $totalPrice,
+                'address'     => $data['address'],
+                'phone'       => $data['phone'],
+            ]);
+
+            $order->products()->attach($productData);
+            $this->cartRepo->clearCart($userId);
+
+            return $this->orderRepo->getOrders($userId);
+        });
     }
-}
+
+    public function getOrder(int $orderId)
+    {
+        $order = $this->orderRepo->getOrder($orderId);
+        $order->load('products');
+
+        return [
+            'id' => $order->id,
+            'total_price' => $order->total_price,
+            'address' => $order->address,
+            'phone' => $order->phone,
+            'status' => $order->status,
+            'products' => $order->products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'quantity' => $product->pivot->quantity,
+                    'price_at_order' => $product->pivot->price_at_order,
+                ];
+            }),
+        ];
+    }
 ```
 
 #### After Refactoring
+
 ```php
-// OrderData.php
-class OrderData
-{
-    public function __construct(
-        public readonly int $userId,
-        public readonly array $items,
-        public readonly AddressData $shippingAddress,
-        public readonly OrderStatus $status = OrderStatus::PENDING,
-        public readonly ?DateTime $createdAt = null
-    ) {
-        $this->createdAt = $createdAt ?? new DateTime();
-    }
-
-    public function calculateTotals(): OrderTotals
-    {
-        $subtotal = array_reduce($this->items, fn($sum, $item) => 
-            $sum + ($item->price * $item->quantity), 0);
-        
-        return new OrderTotals(
-            subtotal: $subtotal,
-            tax: $subtotal * 0.1,
-            shipping: ShippingCalculator::calculate($this->shippingAddress),
-            total: $subtotal + ($subtotal * 0.1) + ShippingCalculator::calculate($this->shippingAddress)
-        );
-    }
-}
-
 // OrderService.php
-class OrderService
-{
-    public function createOrder(OrderData $orderData): Order
+    public function createOrder(array $data)
     {
-        $totals = $orderData->calculateTotals();
-        return $this->orderRepo->create([
-            'user_id' => $orderData->userId,
-            'items' => $orderData->items,
-            'shipping_address' => $orderData->shippingAddress->toArray(),
-            'status' => $orderData->status->value,
-            'created_at' => $orderData->createdAt->format('Y-m-d H:i:s'),
-            'subtotal' => $totals->subtotal,
-            'tax' => $totals->tax,
-            'shipping' => $totals->shipping,
-            'total' => $totals->total
-        ]);
+        return DB::transaction(function () use ($data) {
+            $userId = Auth::id();
+            $cartItems = $this->cartRepo->getCartByUserId($userId);
+
+            if ($cartItems->isEmpty()) {
+                throw new \Exception("Cart is empty");
+            }
+
+            [$productData, $totalPrice] = $this->prepareOrderDetails($cartItems);
+
+            $order = $this->orderRepo->createOrder([
+                'user_id'     => $userId,
+                'total_price' => $totalPrice,
+                'address'     => $data['address'],
+                'phone'       => $data['phone'],
+            ]);
+
+            $order->products()->attach($productData);
+            $this->cartRepo->clearCart($userId);
+
+            return $this->orderRepo->getOrders($userId);
+        });
     }
-}
+
+    public function getOrder(int $orderId): array
+    {
+        $order = $this->orderRepo->getOrder($orderId);
+        $order->load('products');
+
+        return $this->formatOrderDetails($order);
+    }
+
+    protected function prepareOrderDetails($cartItems): array
+    {
+        $productData = [];
+        $totalPrice = 0;
+
+        foreach ($cartItems as $item) {
+            $price = $this->calculateDiscountedPrice($item->product->price, $item->product->discount);
+            $productData[$item->product_id] = [
+                'quantity' => $item->quantity,
+                'price_at_order' => $price,
+            ];
+            $totalPrice += $item->quantity * $price;
+        }
+
+        return [$productData, $totalPrice];
+    }
+
+    protected function calculateDiscountedPrice(float $price, float $discount): float
+    {
+        return $price - ($price * $discount / 100);
+    }
+
+    protected function formatOrderDetails(Order $order): array
+    {
+        return [
+            'id' => $order->id,
+            'total_price' => $order->total_price,
+            'address' => $order->address,
+            'phone' => $order->phone,
+            'status' => $order->status,
+            'products' => $order->products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                    'quantity' => $product->pivot->quantity,
+                    'price_at_order' => $product->pivot->price_at_order,
+                ];
+            }),
+        ];
+    }
 ```
 
-### Payment Service
+### Product Service
 
 #### Code Smells Identified
-1. **Feature Envy**
-   - Payment validation mixed with processing
-   - Currency conversion scattered
-   - Transaction logging mixed with business logic
 
-2. **Primitive Obsession**
-   - Raw payment status strings
-   - Inconsistent currency handling
-   - Missing payment type enums
-
-3. **Temporary Field**
-   - Inconsistent transaction state
-   - Missing validation steps
-   - Unclear payment lifecycle
-
-4. **Shotgun Surgery**
-   - Payment logic scattered across services
-   - Changes require modifications in multiple places
-   - Duplicate validation code
-
-5. **Middle Man**
-   - Unnecessary payment gateway abstraction
-   - Extra layers of delegation
-   - Redundant method calls
+- **Duplicated Code**
 
 #### Before Refactoring
-```php
-// PaymentService.php
-class PaymentService
-{
-    public function processPayment($orderId, $amount, $currency, $paymentMethod)
-    {
-        $payment = [
-            'order_id' => $orderId,
-            'amount' => $amount,
-            'currency' => $currency,
-            'payment_method' => $paymentMethod,
-            'status' => 'pending'
-        ];
 
-        try {
-            $gateway = $this->getPaymentGateway($paymentMethod);
-            $result = $gateway->process($amount, $currency);
-            
-            if ($result['success']) {
-                $payment['status'] = 'completed';
-                $payment['transaction_id'] = $result['transaction_id'];
-            } else {
-                $payment['status'] = 'failed';
-                $payment['error'] = $result['error'];
-            }
-        } catch (Exception $e) {
-            $payment['status'] = 'failed';
-            $payment['error'] = $e->getMessage();
+```php
+// ProductService.php
+    public function createProduct(Request $request, array $data)
+    {
+        $data['image'] = $request->file('image')->store('products', 'public');
+
+        return $this->productRepo->create($data);
+    }
+
+    public function updateProduct(Product $product, array $data, Request $request)
+    {
+        if ($request->hasFile('image')) {
+            Storage::disk('public')->delete($product->image);
+            $data['image'] = $request->file('image')->store('products', 'public');
+        }
+        return $this->productRepo->update($product, $data);
+    }
+
+    public function deleteProduct(Product $product)
+    {
+        if (Storage::disk('public')->exists($product->image)){
+            Storage::disk('public')->delete($product->image);
+        }
+        $this->productRepo->delete($product);
+    }
+```
+
+#### After Refactoring
+
+```php
+// ProductService.php
+    public function createProduct(Request $request, array $data)
+    {
+        $data['image'] = $this->handleImageUpload($request, 'products');
+
+        return $this->productRepo->create($data);
+    }
+
+    public function updateProduct(Product $product, array $data, Request $request)
+    {
+        $newImage = $this->handleImageUpload($request, 'products', $product->image);
+        if ($newImage) {
+            $data['image'] = $newImage;
+        }
+        return $this->productRepo->update($product, $data);
+    }
+
+    public function deleteProduct(Product $product)
+    {
+        $this->deleteImage($product->image, 'products');
+        $this->productRepo->delete($product);
+    }
+// HasImage
+namespace App\Traits;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+trait HasImage
+{
+    public function handleImageUpload(Request $request, string $folder = 'uploads', $oldImage = null): ?string
+    {
+        if (!$request->hasFile('image')) {
+            return null;
         }
 
-        return $this->paymentRepo->create($payment);
+        $this->deleteImage($oldImage, $folder);
+
+        return $request->file('image')->store($folder, 'public');
+    }
+
+    public function deleteImage(?string $img, string $folder = 'uploads'): void
+    {
+        if ($img && Storage::disk('public')->exists($img)) {
+            Storage::disk('public')->delete($img);
+        }
     }
 }
 ```
 
-#### After Refactoring
+### Cart Service
+
+#### Code Smells Identified
+
+- **Feature Envy**
+
+- **Duplicated Code**
+
+#### Before Refactoring
+
 ```php
-// PaymentData.php
-class PaymentData
-{
-    public function __construct(
-        public readonly int $orderId,
-        public readonly Money $amount,
-        public readonly PaymentMethod $method,
-        public readonly PaymentStatus $status = PaymentStatus::PENDING,
-        public readonly ?string $transactionId = null,
-        public readonly ?string $error = null
-    ) {}
-
-    public static function fromRequest(Request $request): self
+// CartService
+    public function addToCart($userId, $productId, $quantity)
     {
-        return new self(
-            orderId: $request->input('order_id'),
-            amount: new Money(
-                $request->input('amount'),
-                $request->input('currency', 'USD')
-            ),
-            method: PaymentMethod::from($request->input('payment_method'))
-        );
-    }
-}
-
-// PaymentService.php
-class PaymentService
-{
-    public function processPayment(PaymentData $paymentData): Payment
-    {
-        try {
-            $gateway = PaymentGatewayFactory::create($paymentData->method);
-            $result = $gateway->process($paymentData->amount);
-            
-            return $this->paymentRepo->create(
-                $paymentData->withStatus(
-                    $result->isSuccessful() 
-                        ? PaymentStatus::COMPLETED 
-                        : PaymentStatus::FAILED
-                )->withTransactionId($result->getTransactionId())
-                 ->withError($result->getError())
-                 ->toArray()
-            );
-        } catch (PaymentException $e) {
-            return $this->paymentRepo->create(
-                $paymentData->withStatus(PaymentStatus::FAILED)
-                           ->withError($e->getMessage())
-                           ->toArray()
-            );
+        $product = $this->productRepo->find($id);
+        if ($product->stock < $quantity) {
+            throw new \Exception('Not enough stock');
         }
+        $cart = $this->cartRepo->findcart($userId, $productId);
+        if ($cart) {
+            $this->cartRepo->updateCart($cart->id, ['quantity' => $cart->quantity + $quantity]);
+        } else {
+            $this->cartRepo->addToCart($userId, $productId, $quantity);
+        }
+        $product->stock -= $quantity;
+        $product->save();
+        return $this->cartRepo->getCartByUserId($userId);
     }
-}
-``` 
+
+    public function updateCart($id, $quantity)
+    {
+        $cart = $this->cartRepo->find($id);
+        $product = $this->productRepo->find($cart->product_id);
+        if ($product->stock < $quantity) {
+            throw new \Exception('Not enough stock');
+        }
+        $this->cartRepo->updateCart($cart->id, ['quantity' => $quantity]);
+        $product->stock = $product->stock + ($cart->quantity - $quantity);
+        $product->save();
+        return $this->getCartByUserId($cart->user_id);
+    }
+
+    public function removeFromCart($id)
+    {
+        $cart = $this->cartRepo->find($id);
+        $product = Product::findOrFail($cart->product_id);
+        $product->stock += $quantity;
+        $product->save();
+        $this->cartRepo->removeFromCart($id);
+        return $this->getCartByUserId($cart->user_id);
+    }
+```
+
+#### After Refactoring
+
+```php
+// CartService
+    public function addToCart($userId, $productId, $quantity)
+    {
+        $this->productService->checkStock($productId, $quantity);
+        $cart = $this->cartRepo->findcart($userId, $productId);
+        if ($cart) {
+            $this->cartRepo->updateCart($cart->id, ['quantity' => $cart->quantity + $quantity]);
+        } else {
+            $this->cartRepo->addToCart($userId, $productId, $quantity);
+        }
+        $this->productService->decrementStock($productId, $quantity);
+        return $this->cartRepo->getCartByUserId($userId);
+    }
+
+    public function updateCart($id, $quantity)
+    {
+        $cart = $this->cartRepo->find($id);
+        $this->productService->checkStock($cart->product_id, $quantity);
+        $this->cartRepo->updateCart($cart->id, ['quantity' => $quantity]);
+        $this->productService->decrementStock($cart->product_id, $quantity - $cart->quantity);
+        return $this->getCartByUserId($cart->user_id);
+    }
+
+    public function removeFromCart($id)
+    {
+        $cart = $this->cartRepo->find($id);
+        $this->productService->incrementStock($cart->product_id, $cart->quantity);
+        $this->cartRepo->removeFromCart($id);
+        return $this->getCartByUserId($cart->user_id);
+    }
+```
+
+### Auth Service
+
+#### Code Smells Identified
+
+- **Duplicated Code**
+
+#### Before Refactoring
+
+```php
+    public function register(array $data)
+    {
+        $user = $this->userRepository->create($data);
+        $token = $user->createToken("auth_token")->plainTextToken;
+        return ['token' => $token, 'user' => $user];
+    }
+
+    public function login(array $data, string $role)
+    {
+        $user = $this->userRepository->findByEmail($data['email']);
+
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            throw AuthException::invalidCredentials();
+        }
+
+        if ($role === 'admin' && !in_array($user->role, ['admin', 'manager'])) {
+            throw AuthException::insufficientPermissions();
+        }
+        if ($user->role === 'admin' || $user->role === 'manager'){
+
+            $token = $user->createToken("admin-token")->plainTextToken;
+        } elseif($user->role === 'user'){
+
+            $token = $user->createToken("auth_token")->plainTextToken;
+        }
+        return ['token' => $token, 'user' => $user];
+    }
+```
+
+#### After Refactoring
+
+```php
+    public function register(array $data)
+    {
+        $user = $this->userRepository->create($data);
+        $token = $this->createUserToken($user, 'user');
+        return ['token' => $token, 'user' => $user];
+    }
+
+    public function login(array $data, string $role)
+    {
+        $user = $this->userRepository->findByEmail($data['email']);
+
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            throw AuthException::invalidCredentials();
+        }
+
+        if ($role === 'admin' && !in_array($user->role, ['admin', 'manager'])) {
+            throw AuthException::insufficientPermissions();
+        }
+
+        $token = $this->createUserToken($user, $role);
+        return ['token' => $token, 'user' => $user];
+    }
+
+    private function createUserToken($user, string $role): string
+    {
+        $tokenName = match ($role) {
+            'admin', 'manager' => 'admin-token',
+            default => 'auth_token'
+        };
+        return $user->createToken($tokenName)->plainTextToken;
+    }
+```

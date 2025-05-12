@@ -33,11 +33,9 @@ class ProductService extends InventoryService
     public function updateProduct(Product $product, array $data, Request $request)
     {
         $newImage = $this->handleImageUpload($request, 'products', $product->image);
-
         if ($newImage) {
             $data['image'] = $newImage;
         }
-
         return $this->productRepo->update($product, $data);
     }
 

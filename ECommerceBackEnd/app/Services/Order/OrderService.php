@@ -6,6 +6,7 @@ use App\Repositories\OrderRepository;
 use App\Repositories\CartRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Order;
 
 class OrderService
 {
@@ -38,17 +39,7 @@ class OrderService
                 throw new \Exception("Cart is empty");
             }
 
-            $productData = [];
-            $totalPrice = 0;
-
-            foreach ($cartItems as $item) {
-                $price = $item->product->price - ($item->product->price * $item->product->discount / 100);
-                $productData[$item->product_id] = [
-                    'quantity'        => $item->quantity,
-                    'price_at_order'  => $price,
-                ];
-                $totalPrice += $item->quantity * $price;
-            }
+            [$productData, $totalPrice] = $this->prepareOrderDetails($cartItems);
 
             $order = $this->orderRepo->createOrder([
                 'user_id'     => $userId,
@@ -58,19 +49,54 @@ class OrderService
             ]);
 
             $order->products()->attach($productData);
-
             $this->cartRepo->clearCart($userId);
 
             return $this->orderRepo->getOrders($userId);
         });
     }
 
-    public function getOrder(int $orderId)
+    public function getOrder(int $orderId): array
     {
         $order = $this->orderRepo->getOrder($orderId);
-
         $order->load('products');
 
+        return $this->formatOrderDetails($order);
+    }
+
+    public function updateOrderStatus(Order $order, int $status)
+    {
+        return $this->orderRepo->updateOrderStatus($order, $status);
+    }
+
+    public function deleteOrder(Order $order)
+    {
+        return $this->orderRepo->deleteOrder($order);
+    }
+
+    protected function prepareOrderDetails($cartItems): array
+    {
+        $productData = [];
+        $totalPrice = 0;
+
+        foreach ($cartItems as $item) {
+            $price = $this->calculateDiscountedPrice($item->product->price, $item->product->discount);
+            $productData[$item->product_id] = [
+                'quantity' => $item->quantity,
+                'price_at_order' => $price,
+            ];
+            $totalPrice += $item->quantity * $price;
+        }
+
+        return [$productData, $totalPrice];
+    }
+
+    protected function calculateDiscountedPrice(float $price, float $discount): float
+    {
+        return $price - ($price * $discount / 100);
+    }
+
+    protected function formatOrderDetails(Order $order): array
+    {
         return [
             'id' => $order->id,
             'total_price' => $order->total_price,
@@ -86,15 +112,5 @@ class OrderService
                 ];
             }),
         ];
-    }
-
-    public function updateOrderStatus($order, int $status)
-    {
-        return $this->orderRepo->updateOrderStatus($order, $status);
-    }
-
-    public function deleteOrder($order)
-    {
-        return $this->orderRepo->deleteOrder($order);
     }
 }

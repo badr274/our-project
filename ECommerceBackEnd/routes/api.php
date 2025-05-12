@@ -32,13 +32,14 @@ Route::get('/latest-products', HomeController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/cart', [CartController::class, 'store']);
-    Route::put('/cart/{cart}', [CartController::class, 'update']);
-    Route::delete('/cart/{cart}', [CartController::class, 'destroy']);
+    // Route::get('/cart', [CartController::class, 'index']);
+    // Route::post('/cart', [CartController::class, 'store']);
+    // Route::put('/cart/{cart}', [CartController::class, 'update']);
+    // Route::delete('/cart/{cart}', [CartController::class, 'destroy']);
+    Route::apiResource('cart', CartController::class);
     Route::post('/wishlist', [WishlistController::class, 'store']);
     Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy']);
     Route::get('/wishlist', [WishlistController::class, 'index']);
-    Route::get('/cart', [CartController::class, 'index']);
     Route::post('/create-payment-intent', [PaymentController::class, 'createPaymentIntent']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
