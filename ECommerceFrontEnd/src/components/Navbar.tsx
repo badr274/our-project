@@ -26,10 +26,12 @@ import {
 import { Link } from "react-router-dom";
 import CookieService from "@/services/CookieService";
 import ShoppingCart from "./ShoppingCart";
-import { useAppSelector } from "@/app/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useModeTheme } from "@/context/ThemeContext";
 import { useLogoutMutation } from "@/app/auth/AuthApiSlice";
+import { useGetCartProductsQuery } from "@/app/services/CartSlice";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
 
 interface MenuItem {
   title: string;
@@ -84,6 +86,10 @@ const Navbar1 = ({
       title: "About",
       url: "/about",
     },
+    {
+      title: "Wishlist",
+      url: "/wishlist",
+    },
   ],
   auth = {
     login: { text: "Log in", url: "/login" },
@@ -92,18 +98,23 @@ const Navbar1 = ({
 }: Navbar1Props) => {
   const token = CookieService.get("token");
   const { theme, setTheme } = useModeTheme();
-
+  const { data: cartData } = useGetCartProductsQuery(undefined, {
+    skip: !token,
+  });
+  const cartItems = useAppSelector((state) => state.shoppingCart.cartItems);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(setCartItems(cartData?.cart));
+  }, [cartData?.cart, dispatch]);
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
   const [isMyDrawerOpen, setIsMyDrawerOpen] = useState<boolean>(false);
-  const { cartItems } = useAppSelector((state) => state.shoppingCart);
   const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     try {
       await logout(token).unwrap();
       CookieService.remove("token");
-      window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -142,17 +153,22 @@ const Navbar1 = ({
             ) : (
               <Button onClick={handleLogout}>Logout</Button>
             )}
-            <ShoppingCart isOpen={isMyDrawerOpen} setIsOpen={setIsMyDrawerOpen}>
-              <Button
-                className="relative"
-                onClick={() => setIsMyDrawerOpen(true)}
+            {token && (
+              <ShoppingCart
+                isOpen={isMyDrawerOpen}
+                setIsOpen={setIsMyDrawerOpen}
               >
-                <ShoppingBasket />
-                <span className="absolute top-[-4px] right-[-4px]  z-10 w-4 h-4 text-[10px] bg-destructive rounded-full text-white flex justify-center items-center">
-                  {cartItems.length}
-                </span>
-              </Button>
-            </ShoppingCart>
+                <Button
+                  className="relative"
+                  onClick={() => setIsMyDrawerOpen(true)}
+                >
+                  <ShoppingBasket />
+                  <span className="absolute top-[-4px] right-[-4px]  z-10 w-4 h-4 text-[10px] bg-destructive rounded-full text-white flex justify-center items-center">
+                    {cartItems?.length || 0}
+                  </span>
+                </Button>
+              </ShoppingCart>
+            )}
           </div>
         </nav>
         {/* Mobile Menu */}
@@ -166,20 +182,22 @@ const Navbar1 = ({
               <Button onClick={() => toggleTheme()}>
                 {theme === "light" ? <Moon /> : <Sun />}
               </Button>
-              <ShoppingCart
-                isOpen={isMyDrawerOpen}
-                setIsOpen={setIsMyDrawerOpen}
-              >
-                <Button
-                  className="relative"
-                  onClick={() => setIsMyDrawerOpen(true)}
+              {token && (
+                <ShoppingCart
+                  isOpen={isMyDrawerOpen}
+                  setIsOpen={setIsMyDrawerOpen}
                 >
-                  <ShoppingBasket />
-                  <span className="absolute top-[-4px] right-[-4px]  z-10 w-4 h-4 text-[10px] bg-red-700 rounded-full text-white flex justify-center items-center">
-                    {cartItems.length}
-                  </span>
-                </Button>
-              </ShoppingCart>
+                  <Button
+                    className="relative"
+                    onClick={() => setIsMyDrawerOpen(true)}
+                  >
+                    <ShoppingBasket />
+                    <span className="absolute top-[-4px] right-[-4px]  z-10 w-4 h-4 text-[10px] bg-red-700 rounded-full text-white flex justify-center items-center">
+                      {cartItems?.length}
+                    </span>
+                  </Button>
+                </ShoppingCart>
+              )}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="outline" size="icon">

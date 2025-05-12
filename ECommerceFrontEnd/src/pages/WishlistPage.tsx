@@ -1,14 +1,17 @@
-import { useGetProductsQuery } from "@/app/services/ProductsSlice";
-import MyCardSkeleton from "@/components/MyCardSkeleton";
+import { useAppSelector } from "@/app/hooks";
+
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
-import { IProduct } from "@/interfaces";
+import { IWishlist } from "@/interfaces";
+
 import { useState } from "react";
 
-const ProductsPage = () => {
-  const { isLoading, data } = useGetProductsQuery({});
+const WishlistPage = () => {
   const [visibleCount, setVisibleCount] = useState(10);
   const [loading, setLoading] = useState(false);
+
+  const wishlist = useAppSelector((state) => state.wislistStore.wishlist);
+
   // Handlers
   const handleShowMore = async () => {
     setLoading(true);
@@ -16,33 +19,29 @@ const ProductsPage = () => {
     setVisibleCount((prev) => prev + 10);
     setLoading(false);
   };
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
-        {[...Array(10)].map((_, idx) => (
-          <MyCardSkeleton key={idx} />
-        ))}
-      </div>
-    );
-  }
   // Renders
-  const renderProductList = data.products
-    .slice(0, visibleCount)
-    .map((product: IProduct) => {
+  console.log(wishlist);
+  const renderWishlistItems = wishlist
+    ?.slice(0, visibleCount)
+    .map((wishItem: IWishlist) => {
+      const { product } = wishItem;
       return (
-        <ProductCard key={product.id} product={product} productsPage={true} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          wishProductId={wishItem.id}
+        />
       );
     });
-
   return (
     <div className="mt-12 px-2 container mx-auto">
       <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-7">
         Browse Our Collection
       </h1>
       <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3">
-        {renderProductList}
+        {renderWishlistItems}
       </div>
-      {visibleCount < data.products.length && (
+      {visibleCount < Array(wishlist).length && (
         <div className="w-full flex items-center justify-center">
           <Button onClick={handleShowMore} className="mt-8 btn btn-primary">
             {loading ? "Loading..." : "Show More"}
@@ -53,4 +52,4 @@ const ProductsPage = () => {
   );
 };
 
-export default ProductsPage;
+export default WishlistPage;

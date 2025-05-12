@@ -13,14 +13,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { loginSchema } from "@/validation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
+import { useGetCartProductsQuery } from "@/app/services/CartSlice";
 const LoginPage = () => {
-  // const defaultLoginData = {
-  //   email: "",
-  //   password: "",
-  // };
+  const token = CookieService.get("token");
+  const { refetch } = useGetCartProductsQuery(undefined, {
+    skip: !token,
+  });
+
   // States
   const navigate = useNavigate();
-  // const [loginData, setLoginData] = useState<ILogin>(defaultLoginData);
   const [login, { isLoading }] = useLoginMutation();
   const {
     register,
@@ -32,15 +33,16 @@ const LoginPage = () => {
       const res = await login(loginData).unwrap();
       console.log(res);
       const date = new Date();
-      const IN_DAYS = 3;
+      const IN_DAYS = 1;
       const EXPIRES_AT = 1000 * 60 * 60 * 24 * IN_DAYS;
       date.setTime(date.getTime() + EXPIRES_AT);
       const options = { path: "/", expires: date };
       CookieService.set("token", res.token, options);
       toast.success("Logined successfully!");
       setTimeout(() => {
-        navigate(-1);
+        navigate("/");
       }, 1500);
+      refetch();
     } catch (error) {
       if (
         typeof error === "object" &&
@@ -74,7 +76,7 @@ const LoginPage = () => {
   );
   return (
     <section className="py-32">
-      <div className="container">
+      <div className="container mx-auto">
         <div className="flex flex-col gap-4">
           <div className="mx-auto w-full max-w-sm rounded-md p-6 shadow">
             <div className="mb-6 flex flex-col items-center">
@@ -122,9 +124,9 @@ const LoginPage = () => {
               </form>
               <div className="mx-auto mt-8 flex justify-center gap-1 text-sm text-muted-foreground">
                 <p>Don't have an account?</p>
-                <Link to="/register" className="font-medium text-primary">
-                  Sign up
-                </Link>
+                <Button variant="link" className="font-medium p-0 m-0 h-fit">
+                  <Link to="/register">Sign up</Link>
+                </Button>
               </div>
             </div>
           </div>

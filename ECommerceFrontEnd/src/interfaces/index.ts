@@ -10,7 +10,7 @@ export interface IProduct {
   description: string;
   category: string;
   price: number;
-  discountPercentage: number;
+  discount: number;
   rating: number;
   stock: number;
   image: string;
@@ -42,10 +42,25 @@ export interface ISignup {
   email: string;
   password: string;
 }
-export interface ICreditCardInput {
-  type: string;
-  name: "creditNumber" | "holderName" | "expiry" | "cvc";
-  placeholder?: string;
-  maxLength?: number;
-  pattern?: string;
+export interface ICartProduct {
+  id: number;
+  product: IProduct;
+  quantity: number;
+}
+export interface IWishlist {
+  id: number;
+  product: IProduct;
+}
+export interface IOrder {
+  id: number;
+  total_price: string | number;
+  address: string;
+  phone: string;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  created_at?: string;
+  updated_at?: string;
+}
+export interface IOrderResponse {
+  order: IOrder[];
+  cart: [];
 }

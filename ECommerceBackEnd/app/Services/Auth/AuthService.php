@@ -44,7 +44,6 @@ class AuthService
         if (!$request->user()) {
             throw AuthException::unauthenticated();
         }
-
         $request->user()->currentAccessToken()->delete();
         return ['message' => 'Logged out successfully'];
     }

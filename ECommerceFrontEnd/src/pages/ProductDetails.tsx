@@ -1,12 +1,15 @@
-import { addToCart } from "@/app/features/ShoppingCartSlice";
+import { setCartItems } from "@/app/features/ShoppingCartSlice";
 import { useAppDispatch } from "@/app/hooks";
+import { useAddProductToCartMutation } from "@/app/services/CartSlice";
 import { useGetSingleProductQuery } from "@/app/services/ProductsSlice";
 import MyCardSkeleton from "@/components/MyCardSkeleton";
 import MyProductDetailsSkeleton from "@/components/MyProductDetailsSkeleton";
 import ProductCard from "@/components/ProductCard";
 import StarRating from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
+import { useAuthDialog } from "@/context/AuthDialogContext";
 import { IProduct } from "@/interfaces";
+import CookieService from "@/services/CookieService";
 import { calcPriceDiscount } from "@/utils";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,36 +17,36 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isLoading, data, error } = useGetSingleProductQuery(id);
+  const { authDialogOpen } = useAuthDialog();
+  const [addProductToCart] = useAddProductToCartMutation();
   const dispatch = useAppDispatch();
   if (isLoading) return <MyProductDetailsSkeleton />;
   if (error) return <h1>Errror</h1>;
-  const { title, description, price, discountPercentage, image } =
+  const { title, description, price, discount, image } =
     data.product as IProduct;
-
-  // const calcRating = () => {
-  //   if (reviews) {
-  //     let rating = 0;
-  //     for (let i = 0; i < reviews.length; i++) {
-  //       rating += reviews[i].rating;
-  //     }
-  //     return rating;
-  //   }
-  // };
+  // Handlers
+  const handleAddToCart = () => {
+    const token = CookieService.get("token");
+    if (!token) {
+      authDialogOpen();
+      return;
+    }
+    addProductToCart({ product_id: Number(id), quantity: 1 }).then((res) => {
+      dispatch(setCartItems(res.data?.cart));
+    });
+  };
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-2 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
+      <div className="grid grid-cols-1 gap-4 container mx-auto xl:grid-cols-4 md:grid-cols-3 mt-7">
         {[...Array(10)].map((_, idx) => (
           <MyCardSkeleton key={idx} />
         ))}
       </div>
     );
   }
-  const handleAddToCart = () => {
-    if (!data) return;
-    dispatch(addToCart(data.product));
-  };
+
   // Renders
-  const renderSimilarProducts = data.SimilarProducts.map(
+  const renderSimilarProducts = data.similarProducts.map(
     (product: IProduct) => {
       return <ProductCard key={product.id} product={product} />;
     }
@@ -72,17 +75,13 @@ const ProductDetails = () => {
             <h2 className="text-xl md:text-2xl  font-bold">{title}</h2>
             <div className="price-reviews flex  items-center justify-between">
               <div className="price flex items-center gap-2">
-                {discountPercentage > 0 ? (
+                {discount > 0 ? (
                   <>
                     <span className="old-price line-through text-gray-300">
                       ${price.toLocaleString()}
                     </span>
-                    <span className="new-price font-semibold">
-                      $
-                      {calcPriceDiscount(
-                        price,
-                        discountPercentage
-                      ).toLocaleString()}
+                    <span className="new-price text-lg font-bold">
+                      ${calcPriceDiscount(price, discount).toLocaleString()}
                     </span>
                   </>
                 ) : (
@@ -100,23 +99,23 @@ const ProductDetails = () => {
               <h4 className="text-lg font-semibold mb-2">Description:</h4>
               <p className="text-sm font-medium text-gray-500">{description}</p>
             </div>
-            <div className="buttons-action flex items-center gap-4 mt-3 flex-1">
+            <div className="buttons-action flex items-end justify-center gap-4 mt-3 flex-1">
               <Button
                 variant={"destructive"}
-                className="flex-1"
+                className="w-full sm:w-1/2 mb-5"
                 onClick={handleAddToCart}
               >
                 Add to cart
               </Button>
-              <Button variant={"secondary"} className="flex-1">
-                Buy Now
-              </Button>
+              {/* <Button variant={"secondary"} className="flex-1">
+               <Link to=''></Link>
+              </Button> */}
             </div>
           </div>
         </div>
         <div className="container mx-auto mt-12">
           <h2 className="font-bold text-2xl mb-7">Similar Products:</h2>
-          <div className="grid grid-cols-1 gap-2 mx-auto xl:grid-cols-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 mx-auto xl:grid-cols-4 md:grid-cols-3">
             {renderSimilarProducts}
           </div>
         </div>
