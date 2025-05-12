@@ -79,8 +79,8 @@ const Navbar1 = ({
       url: "/products",
     },
     {
-      title: "Pricing",
-      url: "/pricing",
+      title: "Orders",
+      url: "/orders",
     },
     {
       title: "About",
