@@ -39,15 +39,6 @@ class AuthService
         return ['token' => $token, 'user' => $user];
     }
 
-    public function logout(Request $request)
-    {
-        if (!$request->user()) {
-            throw AuthException::unauthenticated();
-        }
-        $request->user()->currentAccessToken()->delete();
-        return ['message' => 'Logged out successfully'];
-    }
-
     private function createUserToken($user, string $role): string
     {
         $tokenName = match ($role) {
@@ -55,5 +46,14 @@ class AuthService
             default => 'auth_token'
         };
         return $user->createToken($tokenName)->plainTextToken;
+    }
+
+    public function logout(Request $request)
+    {
+        if (!$request->user()) {
+            throw AuthException::unauthenticated();
+        }
+        $request->user()->currentAccessToken()->delete();
+        return ['message' => 'Logged out successfully'];
     }
 }

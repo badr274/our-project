@@ -2,49 +2,45 @@
 
 namespace App\Services\Payment;
 
-use App\DTOs\PaymentData;
-use App\Repositories\PaymentRepository;
-use App\Exceptions\PaymentException;
-use App\Factories\PaymentGatewayFactory;
-use App\Models\Payment;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 
 class PaymentService
 {
-    public function __construct(
-        private readonly PaymentRepository $paymentRepo
-    ) {}
+    const DEFAULT_CURRENCY = 'usd';
+    const SUPPORTED_METHODS = ['card'];
 
-    public function processPayment(PaymentData $paymentData): Payment
+    public function createPaymentIntent(array $data)
     {
         try {
-            $gateway = PaymentGatewayFactory::create($paymentData->method);
-            $result = $gateway->process($paymentData->amount);
-            
-            return $this->paymentRepo->create(
-                $paymentData->withStatus(
-                    $result->isSuccessful() 
-                        ? PaymentStatus::COMPLETED 
-                        : PaymentStatus::FAILED
-                )->withTransactionId($result->getTransactionId())
-                 ->withError($result->getError())
-                 ->toArray()
+            $this->initializeStripe();
+
+            $paymentIntent = PaymentIntent::create(
+                $this->buildPaymentIntentPayload($data['amount'])
             );
-        } catch (PaymentException $e) {
-            return $this->paymentRepo->create(
-                $paymentData->withStatus(PaymentStatus::FAILED)
-                           ->withError($e->getMessage())
-                           ->toArray()
-            );
+
+            return [
+                'clientSecret' => $paymentIntent->client_secret,
+                'user' => auth()->user(), // يمكن جعله اختياريًا
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+            ];
         }
     }
 
-    public function getPayment(int $id): ?Payment
+    private function initializeStripe(): void
     {
-        return $this->paymentRepo->find($id);
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
     }
 
-    public function getOrderPayments(int $orderId): array
+    private function buildPaymentIntentPayload(float $amount): array
     {
-        return $this->paymentRepo->findByOrderId($orderId);
+        return [
+            'amount' => intval($amount * 100),
+            'currency' => self::DEFAULT_CURRENCY,
+            'payment_method_types' => self::SUPPORTED_METHODS,
+        ];
     }
-} 
+}
