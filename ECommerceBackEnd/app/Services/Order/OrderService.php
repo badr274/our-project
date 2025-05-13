@@ -55,14 +55,6 @@ class OrderService
         });
     }
 
-    public function getOrder(int $orderId): array
-    {
-        $order = $this->orderRepo->getOrder($orderId);
-        $order->load('products');
-
-        return $this->formatOrderDetails($order);
-    }
-
     public function updateOrderStatus(Order $order, int $status)
     {
         return $this->orderRepo->updateOrderStatus($order, $status);
@@ -93,24 +85,5 @@ class OrderService
     protected function calculateDiscountedPrice(float $price, float $discount): float
     {
         return $price - ($price * $discount / 100);
-    }
-
-    protected function formatOrderDetails(Order $order): array
-    {
-        return [
-            'id' => $order->id,
-            'total_price' => $order->total_price,
-            'address' => $order->address,
-            'phone' => $order->phone,
-            'status' => $order->status,
-            'products' => $order->products->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'quantity' => $product->pivot->quantity,
-                    'price_at_order' => $product->pivot->price_at_order,
-                ];
-            }),
-        ];
     }
 }

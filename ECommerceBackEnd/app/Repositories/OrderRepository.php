@@ -17,11 +17,6 @@ class OrderRepository
         return Order::create($data);
     }
 
-    public function getOrder($orderId)
-    {
-        return Order::findOrFail($orderId);
-    }
-
     public function getAllOrders()
     {
         return Order::with(['user:id,name'])->get();
