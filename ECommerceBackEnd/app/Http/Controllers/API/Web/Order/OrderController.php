@@ -39,7 +39,6 @@ class OrderController extends Controller
      */
     public function show(Order $order): JsonResponse
     {
-        $order = $this->orderService->getOrder($order->id);
         return response()->json(['order' => $order], 200);
     }
 
